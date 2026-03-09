@@ -6,7 +6,7 @@ public class Parser {
      * Checks user command and calls functions according to the command.
      *
      * @param input The user input string.
-     * @param transactionList  The current list of transactions.
+     * @param list  The current list of transactions.
      * @param ui    The ui instance.
      */
     public void parse(String input, TransactionList list, Ui ui) {
