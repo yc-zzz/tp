@@ -16,4 +16,13 @@ java -jar %jarloc% < ..\..\text-ui-test\input.txt > ..\..\text-ui-test\ACTUAL.TX
 
 cd ..\..\text-ui-test
 
-FC ACTUAL.TXT EXPECTED.TXT >NUL && ECHO Test passed! || Echo Test failed!
+rem Resolve today's date in yyyy-MM-dd format
+for /f "tokens=1-3 delims=-" %%a in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd"') do (
+    set TODAY=%%a-%%b-%%c
+)
+
+rem Replace {TODAY} placeholder with today's date in a temp expected file
+powershell -NoProfile -Command ^
+    "(Get-Content EXPECTED.TXT) -replace '\{TODAY\}', '%TODAY%' | Set-Content EXPECTED-RESOLVED.TXT"
+
+FC ACTUAL.TXT EXPECTED-RESOLVED.TXT >NUL && ECHO Test passed! || ECHO Test failed!
