@@ -1,4 +1,4 @@
-package seedu.duke;
+package seedu.duke.ui;
 
 //can be customised more, problems for later
 
@@ -53,16 +53,20 @@ public class Ui {
         System.out.println("Enter `help` to check the list of available commands.");
     }
 
+    public void showExitMessage() {
+        System.out.println("Goodbye. Thank you for investing in MoneyBagProMax.");
+    }
+
     public void showMessage(String message) {
         System.out.println(message);
     }
 
     public void showOverallSummary(double income, double expense) {
-        System.out.println("----- Overall Summary -----");
+        System.out.println("===== Overall Summary =====");
         System.out.printf("Total Income: $%.2f%n", income);
         System.out.printf("Total Expense: $%.2f%n", expense);
         System.out.printf("Net Balance: $%.2f%n", (income - expense));
-        System.out.println("--------------------------");
+        System.out.println("===========================");
     }
 
     public void showCategorySummary(String category, double categoryTotal) {
