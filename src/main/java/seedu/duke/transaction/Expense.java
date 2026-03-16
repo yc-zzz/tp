@@ -1,4 +1,4 @@
-package seedu.duke;
+package seedu.duke.transaction;
 
 import java.time.LocalDate;
 

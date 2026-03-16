@@ -1,6 +1,10 @@
 package seedu.duke;
 
 import org.junit.jupiter.api.Test;
+import seedu.duke.transaction.Expense;
+import seedu.duke.transaction.Transaction;
+import seedu.duke.transactionlist.TransactionList;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TransactionListTest {

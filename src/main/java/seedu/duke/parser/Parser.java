@@ -1,9 +1,19 @@
-package seedu.duke;
+package seedu.duke.parser;
+
+import seedu.duke.MoneyBagProMaxException;
+import seedu.duke.command.AddCommand;
+import seedu.duke.command.Command;
+import seedu.duke.command.DeleteCommand;
+import seedu.duke.command.ExitCommand;
+import seedu.duke.command.ListCommand;
+import seedu.duke.command.SummaryCommand;
+import seedu.duke.command.HelpCommand;
+import seedu.duke.command.FindCommand;
+import seedu.duke.transactionlist.TransactionList;
+import seedu.duke.ui.Ui;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.stream.IntStream;
 
 public class Parser {
 

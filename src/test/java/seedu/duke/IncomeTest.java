@@ -3,6 +3,10 @@ package seedu.duke;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import seedu.duke.parser.Parser;
+import seedu.duke.transaction.Income;
+import seedu.duke.transactionlist.TransactionList;
+import seedu.duke.ui.Ui;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

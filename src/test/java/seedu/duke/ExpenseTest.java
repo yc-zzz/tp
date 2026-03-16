@@ -1,6 +1,8 @@
 package seedu.duke;
 
 import org.junit.jupiter.api.Test;
+import seedu.duke.transaction.Expense;
+
 import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

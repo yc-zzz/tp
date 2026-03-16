@@ -1,5 +1,10 @@
 package seedu.duke;
 
+import seedu.duke.command.Command;
+import seedu.duke.parser.Parser;
+import seedu.duke.transactionlist.TransactionList;
+import seedu.duke.ui.Ui;
+
 public class MoneyBagProMax {
     /**
      * Main entry-point for the java.duke.MoneyBagProMax application.

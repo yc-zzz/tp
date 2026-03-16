@@ -1,4 +1,4 @@
-package seedu.duke;
+package seedu.duke.transactionlist;
 
 import seedu.duke.transaction.Transaction;
 
