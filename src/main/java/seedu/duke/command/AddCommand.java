@@ -14,6 +14,10 @@ public class AddCommand extends Command {
     private final LocalDate date;
 
     public AddCommand(String category, double amount, String description, LocalDate date) {
+        assert category != null && !category.isBlank() : "Category should not be null or blank";
+        assert amount > 0 : "Amount should be positive";
+        assert description != null : "Description should not be null";
+        assert date != null : "Date should not be null";
         this.category = category;
         this.amount = amount;
         this.description = description;
@@ -22,7 +26,7 @@ public class AddCommand extends Command {
 
     @Override
     public void execute(TransactionList list, Ui ui) {
-        if (category.equalsIgnoreCase("income")) {
+        if (Income.VALID_CATEGORIES.contains(category.toLowerCase())) {
             Income income = new Income(category, amount, description, date);
             list.add(income);
             ui.showMessage("Added: " + income);
@@ -32,7 +36,8 @@ public class AddCommand extends Command {
             ui.showMessage("Added: " + expense);
         } else {
             ui.showMessage("Invalid category '" + category + "'."
-                    + " Valid categories: " + Expense.VALID_CATEGORIES);
+                                   + " Valid expense categories: " + Expense.VALID_CATEGORIES
+                                   + " Valid income categories: " + Income.VALID_CATEGORIES);
         }
     }
 

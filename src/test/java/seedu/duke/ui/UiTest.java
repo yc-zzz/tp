@@ -31,7 +31,6 @@ class UiTest {
         return outContent.toString().trim();
     }
 
-    // read input tests
     @Test
     void readInput_simpleCommand_returnsTrimmed() {
         System.setIn(new ByteArrayInputStream("list\n".getBytes()));
@@ -69,13 +68,24 @@ class UiTest {
     @Test
     void showHelp_containsAddExpenseFormat() {
         new Ui().showHelp();
-        assertTrue(output().contains("add [category]/PRICE"));
+        assertTrue(output().contains("add [expense-category]/PRICE"));
     }
 
     @Test
     void showHelp_containsAddIncomeFormat() {
         new Ui().showHelp();
-        assertTrue(output().contains("add income/PRICE"));
+        assertTrue(output().contains("add [income-category]/PRICE"));
+    }
+
+    @Test
+    void showHelp_containsValidIncomeCategories() {
+        new Ui().showHelp();
+        String out = output();
+        assertTrue(out.contains("salary"));
+        assertTrue(out.contains("freelance"));
+        assertTrue(out.contains("investment"));
+        assertTrue(out.contains("business"));
+        assertTrue(out.contains("gift"));
     }
 
     @Test

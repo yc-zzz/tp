@@ -1,18 +1,23 @@
 package seedu.duke.transaction;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Income extends Transaction {
+
+    public static final List<String> VALID_CATEGORIES = List.of(
+            "salary", "freelance", "investment", "business", "gift", "misc"
+    );
+
+    private static final Logger logger = Logger.getLogger(Income.class.getName());
+
     public Income(String category, double amount, String description, LocalDate date) {
         super(category, amount, description, date);
-    }
-
-    public Income(String category, double amount, String description) {
-        super(category, amount, description);
-    }
-
-    public Income(String category, double amount) {
-        super(category, amount);
+        assert VALID_CATEGORIES.contains(category) : "Income category must be one of: " + VALID_CATEGORIES;
+        logger.log(Level.INFO, "Created Income — category: {0}, amount: {1}, description: \"{2}\", date: {3}",
+                   new Object[]{category, amount, description, date});
     }
 
     @Override

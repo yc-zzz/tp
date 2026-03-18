@@ -14,7 +14,8 @@ import java.io.PrintStream;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class IncomeTest {
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -22,13 +23,11 @@ public class IncomeTest {
 
     @BeforeEach
     public void setUpStreams() {
-        // re-routes System.out to our outContent stream before each test
         System.setOut(new PrintStream(outContent));
     }
 
     @AfterEach
     public void restoreStreams() {
-        // puts System.out back to normal after the test finishes
         System.setOut(originalOut);
     }
     
@@ -38,16 +37,41 @@ public class IncomeTest {
         Ui ui = new Ui();
         Parser parser = new Parser();
 
-        // Input simulates adding income
-        Command command = parser.parse("add income/50.00 desc/Salary d/2023-10-01");
+        // Updated to use a valid income category
+        Command command = parser.parse("add salary/50.00 desc/monthly d/2023-10-01");
         command.execute(list, ui);
 
         assertEquals(1, list.size(), "List should have 1 transaction");
-
-        // This is the crucial check: verifying it is an Income instance, not Expense
-        boolean isIncomeInstance = list.get(0) instanceof Income;
-        assertTrue(isIncomeInstance, "The added transaction should be an instance of Income");
+        assertInstanceOf(Income.class, list.get(0), "The added transaction should be an instance of Income");
         assertEquals(50.00, list.get(0).getAmount(), 0.001);
+    }
+
+    @Test
+    public void income_validCategory_createsSuccessfully() {
+        Income income = new Income("salary", 1000.00, "monthly", LocalDate.now());
+        assertEquals("salary", income.getCategory());
+        assertEquals(1000.00, income.getAmount(), 0.001);
+        assertEquals("income", income.getType());
+    }
+
+    @Test
+    public void income_invalidCategory_throwsAssertionError() {
+        assertThrows(AssertionError.class, () ->
+                new Income("food", 1000.00, "test", LocalDate.now()));
+    }
+
+    @Test
+    public void income_allValidCategories_createSuccessfully() {
+        for (String category : Income.VALID_CATEGORIES) {
+            Income income = new Income(category, 100.00, "test", LocalDate.now());
+            assertEquals(category, income.getCategory());
+        }
+    }
+
+    @Test
+    public void income_toString_formatsCorrectly() {
+        Income income = new Income("salary", 1000.00, "monthly pay", LocalDate.of(2026, 3, 18));
+        assertEquals("[Income] salary \"monthly pay\" $1000.00 (2026-03-18)", income.toString());
     }
 
     @Test
@@ -61,7 +85,6 @@ public class IncomeTest {
         Command command = parser.parse("summary");
         command.execute(list, ui);
 
-        // Verify that Total Expense is $0.00 and Net Balance matches Income
         String expectedOutput = "===== Overall Summary =====" + System.lineSeparator() +
                 "Total Income: $5000.00" + System.lineSeparator() +
                 "Total Expense: $0.00" + System.lineSeparator() +

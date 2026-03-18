@@ -37,7 +37,7 @@ class FindCommandTest {
         Ui ui = new Ui();
 
         list.add(new Expense("food", 10.50, "lunch", LocalDate.parse("2026-03-14")));
-        list.add(new Income("income", 50.00, "pocket money", LocalDate.parse("2026-03-15")));
+        list.add(new Income("salary", 50.00, "pocket money", LocalDate.parse("2026-03-15")));
         list.add(new Expense("transport", 5.00, "bus to lunch", LocalDate.parse("2026-03-16")));
 
         Command command = new FindCommand("lunch");
