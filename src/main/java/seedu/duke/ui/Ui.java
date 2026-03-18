@@ -33,14 +33,14 @@ public class Ui {
                                  - Searches for transactions containing the keyword
                                    in their category, description or date.
                                  - Example: find lunch
-                                 - Example: find 2026-03 
+                                 - Example: find 2026-03
                 5. Summary     : `summary [category]`
                                  - Shows overall totals or specific category totals.
                                  - Valid types: `all`, `expense`, `income`, or specific categories.
-                                 - Example: summary all 
+                                 - Example: summary all
                 6. Delete      : `delete [ENTRY INDEX]`
                                  - Deletes a transaction using its number from the `list`.
-                                 - Example: delete 3 
+                                 - Example: delete 3
                 7. Exit        : `exit`
                                  - Exits the program.
                 %s""".formatted(separator, separator, separator);
@@ -58,10 +58,13 @@ public class Ui {
     }
 
     public void showMessage(String message) {
+        assert message != null : "Message should not be null";
         System.out.println(message);
     }
 
     public void showOverallSummary(double income, double expense) {
+        assert income >= 0 : "Income total should not be negative";
+        assert expense >= 0 : "Expense total should not be negative";
         System.out.println("===== Overall Summary =====");
         System.out.printf("Total Income: $%.2f%n", income);
         System.out.printf("Total Expense: $%.2f%n", expense);
@@ -70,6 +73,8 @@ public class Ui {
     }
 
     public void showCategorySummary(String category, double categoryTotal) {
+        assert category != null && !category.isBlank() : "Category should not be null or blank";
+        assert categoryTotal >= 0 : "Category total should not be negative";
         System.out.printf("Total for %s: $%.2f%n", category, categoryTotal);
     }
 }
