@@ -1,6 +1,7 @@
 package seedu.duke.transaction;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -8,7 +9,7 @@ public class Expense extends Transaction {
 
     private static final Logger logger = Logger.getLogger(Expense.class.getName());
     
-    public static final java.util.List<String> VALID_CATEGORIES = java.util.List.of(
+    public static final List<String> VALID_CATEGORIES = List.of(
             "food", "transport", "utilities", "education", "rent", "medical", "misc"
     );
 
