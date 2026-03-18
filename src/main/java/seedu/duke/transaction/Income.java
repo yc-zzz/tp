@@ -6,18 +6,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Income extends Transaction {
-
-    public static final List<String> VALID_CATEGORIES = List.of(
-            "salary", "freelance", "investment", "business", "gift", "misc"
-    );
-
-    private static final Logger logger = Logger.getLogger(Income.class.getName());
-
     public Income(String category, double amount, String description, LocalDate date) {
         super(category, amount, description, date);
-        assert VALID_CATEGORIES.contains(category) : "Income category must be one of: " + VALID_CATEGORIES;
-        logger.log(Level.INFO, "Created Income — category: {0}, amount: {1}, description: \"{2}\", date: {3}",
-                   new Object[]{category, amount, description, date});
+        assert getType().equals("income") : "Type should be income";
+    }
+
+    public Income(String category, double amount, String description) {
+        super(category, amount, description);
+        assert getType().equals("income") : "Type should be income";
+    }
+
+    public Income(String category, double amount) {
+        super(category, amount);
+        assert getType().equals("income") : "Type should be income";
     }
 
     @Override
@@ -27,6 +28,11 @@ public class Income extends Transaction {
 
     @Override
     public String toString() {
+        assert category != null && !category.isEmpty() : "Category should not be null or empty";
+        assert amount > 0 : "Amount should be positive";
+        assert description != null : "Description should not be null";
+        assert date != null : "Date should not be null";
+        
         String descriptionSuffix = description.isEmpty() ? "" : " \"" + description + "\"";
         return String.format("[Income] %s%s $%.2f (%s)", category, descriptionSuffix, amount, date);
     }

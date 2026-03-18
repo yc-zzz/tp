@@ -61,10 +61,13 @@ public class Ui {
     }
 
     public void showMessage(String message) {
+        assert message != null : "Message should not be null";
         System.out.println(message);
     }
 
     public void showOverallSummary(double income, double expense) {
+        assert income >= 0 : "Income total should not be negative";
+        assert expense >= 0 : "Expense total should not be negative";
         System.out.println("===== Overall Summary =====");
         System.out.printf("Total Income: $%.2f%n", income);
         System.out.printf("Total Expense: $%.2f%n", expense);
@@ -73,6 +76,8 @@ public class Ui {
     }
 
     public void showCategorySummary(String category, double categoryTotal) {
+        assert category != null && !category.isBlank() : "Category should not be null or blank";
+        assert categoryTotal >= 0 : "Category total should not be negative";
         System.out.printf("Total for %s: $%.2f%n", category, categoryTotal);
     }
 }
