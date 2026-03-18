@@ -27,15 +27,18 @@ Enter a command: [ERROR!] Invalid, try: delete INDEX
 Enter a command: ============================================================
                   MoneyBagProMax Help Menu
 ============================================================
-1. Add Expense : `add [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`
+1. Add Expense : `add [expense-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`
                  - desc/ and d/ are optional.
                  - Date defaults to today if omitted.
                  - Valid categories: `food`, `transport`, `utilities`,
                    `education`, `rent`, `medical`, `misc`
                  - Example: add food/10 desc/lunch d/2025-03-01
-2. Add Income  : `add income/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`
+2. Add Income  : `add [income-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`
                  - desc/ and d/ are optional.
-                 - Example: add income/500 desc/allowance
+                 - Date defaults to today if omitted.
+                 - Valid categories: `salary`, `freelance`, `investment`,
+                   `business`, `gift`, `misc`
+                 - Example: add salary/500 desc/allowance d/2026-03-01
 3. List        : `list`
                  - Lists all current transactions in your app.
 4. Find        : `find [KEYWORD]`
