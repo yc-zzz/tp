@@ -1,0 +1,51 @@
+@startuml
+
+actor User
+participant Ui
+participant Parser
+participant SummaryCommand
+participant TransactionList
+
+User -> Ui : "summary food"
+activate Ui
+
+Ui -> Parser : parse("summary food")
+activate Parser
+
+create SummaryCommand
+Parser -> SummaryCommand : SummaryCommand("food")
+activate SummaryCommand
+SummaryCommand --> Parser
+deactivate SummaryCommand
+
+Parser --> Ui
+deactivate Parser
+
+Ui -> SummaryCommand : execute(transactions, ui)
+activate SummaryCommand
+
+loop for each transaction
+    SummaryCommand -> TransactionList : get(i)
+    activate TransactionList
+    TransactionList --> SummaryCommand
+    deactivate TransactionList
+
+    note right of SummaryCommand: Extracts amount, type, and \ncategory to update totals
+end
+
+alt summaryType == "all"
+    SummaryCommand -> Ui : showOverallSummary(...)
+    activate Ui
+    Ui --> SummaryCommand
+    deactivate Ui
+else specific category
+    SummaryCommand -> Ui : showCategorySummary(...)
+    activate Ui
+    Ui --> SummaryCommand
+    deactivate Ui
+end
+
+SummaryCommand --> Ui
+deactivate SummaryCommand
+deactivate Ui
+@enduml

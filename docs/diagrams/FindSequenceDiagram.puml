@@ -1,0 +1,52 @@
+@startuml
+
+actor User
+participant Ui
+participant Parser
+participant FindCommand
+participant TransactionList
+
+User -> Ui : "find food"
+activate Ui
+
+Ui -> Parser : parse("find food")
+activate Parser
+
+create FindCommand
+Parser -> FindCommand : FindCommand("food")
+activate FindCommand
+FindCommand --> Parser
+deactivate FindCommand
+
+Parser --> Ui
+deactivate Parser
+
+Ui -> FindCommand : execute(transactions, ui)
+activate FindCommand
+
+loop for each transaction
+    FindCommand -> TransactionList : get(i)
+    activate TransactionList
+    TransactionList --> FindCommand
+    deactivate TransactionList
+
+    note right of FindCommand: Checks if description, category, \nor date contains the keyword
+end
+
+alt matches > 0
+    FindCommand -> Ui : showMessage(...)
+    activate Ui
+    note right: Displays the number of matches\nand each matching transaction
+    Ui --> FindCommand
+    deactivate Ui
+else no matches found
+    FindCommand -> Ui : showMessage(...)
+    activate Ui
+    Ui --> FindCommand
+    deactivate Ui
+end
+
+FindCommand --> Ui
+deactivate FindCommand
+deactivate Ui
+@enduml

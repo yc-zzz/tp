@@ -65,6 +65,55 @@ The chosen design using separate command classes was preferred because it improv
 ### Future Improvements
 Possible future improvements include allowing deletion of multiple transactions at once, supporting filtered list views, and adding an undo feature to restore deleted transactions
 
+---
+
+## Find and Summary Transaction Features
+
+### Overview
+The `find` and `summary` features allow users to draw meaningful insights from their recorded transactions.
+The `find` command locates specific transactions based on keyword matching, allowing users to search for distinct transactions or categories. 
+The `summary` command calculates and displays the overall statistics (eg. total expense) for the user to see at a glance.
+
+### Architecture and Flow
+Similar to the broader application architecture, these features rely on the interaction between the `Parser`, `Command`, `TransactionList`, and `Ui` components.
+1. The `Parser` receives raw input (e.g., `find food` or `summary`) and instantiates either a `FindCommand` containing the target keyword, or a `SummaryCommand`.
+2. Upon calling `execute()`, the respective command interacts with the `TransactionList` to either filter for matches or aggregate financial data.
+3. The computed results are formatted and printed to the user via the `Ui`.
+
+### Finding Transactions
+The `find` command is encapsulated within the `FindCommand` class. 
+During execution, the method iterates through the current list, comparing the target keyword against the description of each transaction.
+
+#### Sequence Diagram for Find Command
+The following sequence diagram illustrates the precise object interactions when a user searches for a keyword.
+![Find Sequence Diagram](diagrams/FindSequenceDiagram.png)
+
+### Summarizing Transactions
+The `summary` command is handled by the `SummaryCommand` class. 
+It performs computations over the list of transactions. 
+It iterates through the entire `TransactionList`, categorising each entry as either an Income or an Expense, and sums the respective totals before calculating the net balance.
+
+#### Sequence Diagram for Summary Command
+The following sequence diagram illustrates the interactions when a user wants to see a summary of their transactions.
+![Summary Sequence Diagram](diagrams/SummarySequenceDiagram.png)
+
+### Class Diagram
+Both commands adhere to the application's Command pattern structure. The diagram below shows how `FindCommand` and `SummaryCommand` inherit from the abstract `Command` class and depend on `TransactionList` and `Ui`.
+
+![Find and Summary Class Diagram](diagrams/FindSummaryClassDiagram.png)
+
+### Design Considerations
+* **Case-Insensitive Searching:** For the `find` feature, it was decided that keyword matching should be case-insensitive (e.g., searching "food" returns "Food" and "FOOD"). This greatly enhances user experience, as users do not need to remember the exact capitalization of their previous entries.
+* **Stream-Based Indexing:** A major design consideration was how to display matching transactions alongside their original indices from the main list. Instead of iterating through the list and keeping a separate counter, IntStream.range(0, list.size()) was used.
+
+### Alternatives Considered
+* **Alternative for Summary:** We considered caching the total income and expense values inside `TransactionList`, updating them dynamically every time an item is added or deleted. While this makes the `summary` command run in O(1) time, it heavily complicates the `add` and `delete` operations and introduces state-synchronization bugs. The O(N) calculation upon execution was chosen for stability and simplicity.
+
+### Future Improvements
+* **Time-Bound Summaries:** Upgrading the `summary` command to accept date parameters, allowing users to see summaries for specific months or weeks (e.g., `summary /from 2026-01-01 /to 2026-01-31`).
+
+---
+
 ## Product scope
 ### Target user profile
 

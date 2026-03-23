@@ -1,0 +1,35 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class "{abstract}\nCommand" as Command {
+  +execute(transactions: TransactionList, ui: Ui): void
+}
+
+class FindCommand {
+  -keyword: String
+  +execute(transactions: TransactionList, ui: Ui): void
+}
+
+class SummaryCommand {
+  +execute(transactions: TransactionList, ui: Ui): void
+}
+
+class TransactionList {
+  +findTransactions(keyword: String): ArrayList<Transaction>
+  +getTransactions(): ArrayList<Transaction>
+}
+
+class Ui {
+  +showTransactions(transactions: ArrayList<Transaction>): void
+  +showSummary(income: double, expense: double, net: double): void
+}
+
+Command <|-- FindCommand
+Command <|-- SummaryCommand
+FindCommand ..> TransactionList
+FindCommand ..> Ui
+SummaryCommand ..> TransactionList
+SummaryCommand ..> Ui
+
+@enduml
