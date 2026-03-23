@@ -6,15 +6,25 @@ import seedu.duke.command.Command;
 import seedu.duke.command.DeleteCommand;
 import seedu.duke.command.ExitCommand;
 import seedu.duke.command.ListCommand;
+import seedu.duke.command.RedoCommand;
 import seedu.duke.command.SummaryCommand;
 import seedu.duke.command.HelpCommand;
 import seedu.duke.command.FindCommand;
 import seedu.duke.command.SortCommand;
+import seedu.duke.command.UndoCommand;
+import seedu.duke.undoredo.UndoRedoManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
 public class Parser {
+
+    private final UndoRedoManager undoRedoManager;
+
+    public Parser(UndoRedoManager undoRedoManager) {
+        assert undoRedoManager != null : "UndoRedoManager should not be null";
+        this.undoRedoManager = undoRedoManager;
+    }
 
     /**
      * Checks user command and calls functions according to the command.
@@ -54,6 +64,10 @@ public class Parser {
             return new FindCommand(arguments);
         case "sort":
             return parseSortCommand(arguments);
+        case "undo":
+            return new UndoCommand(undoRedoManager);
+        case "redo":
+            return new RedoCommand(undoRedoManager);
         default:
             throw new MoneyBagProMaxException("Unknown command. Type `help` to see the list of available commands.");
         }
@@ -81,7 +95,7 @@ public class Parser {
             assert !date.isBefore(LocalDate.of(1900, 1, 1)) : 
                     "Parsed date is before year 1900, likely a typo: " + date;
             
-            return new AddCommand(category, amount, description, date);
+            return new AddCommand(category, amount, description, date, undoRedoManager);
             
         } catch (NumberFormatException e) {
             throw new MoneyBagProMaxException("Invalid price.");
@@ -94,7 +108,7 @@ public class Parser {
         }
         try {
             int index = Integer.parseInt(indexText);
-            return new DeleteCommand(index);
+            return new DeleteCommand(index, undoRedoManager);
         } catch (NumberFormatException e) {
             throw new MoneyBagProMaxException("Invalid, try: delete INDEX");
         }

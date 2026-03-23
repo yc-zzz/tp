@@ -79,6 +79,19 @@ public class TransactionList {
     }
 
     /**
+     * Inserts a transaction at the specified index, shifting subsequent elements right.
+     *
+     * @param index position at which to insert
+     * @param t     the transaction to insert
+     */
+    public void insert(int index, Transaction t) {
+        assert index >= 0 && index <= transactions.size() : "Insert index is out of bounds";
+        assert t != null : "Transaction should not be null";
+        logger.info("Inserting transaction at index " + index + ": " + t);
+        transactions.add(index, t);
+    }
+
+    /**
      * Returns a new list containing all transactions sorted by the given comparator.
      * The original list order is not modified.
      *

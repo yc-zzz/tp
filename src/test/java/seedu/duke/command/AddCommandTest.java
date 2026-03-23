@@ -4,6 +4,7 @@ import seedu.duke.transaction.Expense;
 import seedu.duke.transaction.Income;
 import seedu.duke.transactionlist.TransactionList;
 import seedu.duke.ui.Ui;
+import seedu.duke.undoredo.UndoRedoManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -36,7 +37,8 @@ class AddCommandTest {
         TransactionList list = new TransactionList();
         Ui ui = new Ui();
 
-        AddCommand command = new AddCommand("salary", 1000.00, "monthly", LocalDate.of(2026, 3, 18));
+        AddCommand command = new AddCommand("salary", 1000.00, "monthly", LocalDate.of(2026, 3, 18),
+                new UndoRedoManager());
         command.execute(list, ui);
 
         assertEquals(1, list.size());
@@ -49,7 +51,8 @@ class AddCommandTest {
         TransactionList list = new TransactionList();
         Ui ui = new Ui();
 
-        AddCommand command = new AddCommand("food", 10.00, "lunch", LocalDate.of(2026, 3, 18));
+        AddCommand command = new AddCommand("food", 10.00, "lunch", LocalDate.of(2026, 3, 18),
+                new UndoRedoManager());
         command.execute(list, ui);
 
         assertEquals(1, list.size());
@@ -62,7 +65,8 @@ class AddCommandTest {
         TransactionList list = new TransactionList();
         Ui ui = new Ui();
 
-        AddCommand command = new AddCommand("invalid", 10.00, "test", LocalDate.of(2026, 3, 18));
+        AddCommand command = new AddCommand("invalid", 10.00, "test", LocalDate.of(2026, 3, 18),
+                new UndoRedoManager());
         command.execute(list, ui);
 
         assertEquals(0, list.size());

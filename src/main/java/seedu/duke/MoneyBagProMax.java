@@ -4,6 +4,7 @@ import seedu.duke.command.Command;
 import seedu.duke.parser.Parser;
 import seedu.duke.transactionlist.TransactionList;
 import seedu.duke.ui.Ui;
+import seedu.duke.undoredo.UndoRedoManager;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,9 +19,10 @@ public class MoneyBagProMax {
     public static void main(String[] args) {
         logger.info("Starting the MoneyBagProMax application...");
         TransactionList list = new TransactionList();
-        Parser parser = new Parser();
+        UndoRedoManager undoRedoManager = new UndoRedoManager();
+        Parser parser = new Parser(undoRedoManager);
         Ui ui = new Ui();
-        logger.info("Core components: TransactionList, Parser and Ui initialised successfully.");
+        logger.info("Core components: TransactionList, Parser, UndoRedoManager and Ui initialised successfully.");
 
         ui.showWelcomeMessage();
         boolean isExit = false;

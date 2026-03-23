@@ -48,7 +48,11 @@ public class Ui {
                 7. Delete      : `delete [ENTRY INDEX]`
                                  - Deletes a transaction using its number from the `list`.
                                  - Example: delete 3
-                8. Exit        : `exit`
+                8. Undo        : `undo`
+                                 - Reverses the last add or delete action.
+                9. Redo        : `redo`
+                                 - Re-applies the last undone action.
+                10. Exit       : `exit`
                                  - Exits the program.
                 %s""".formatted(separator, separator, separator);
 
