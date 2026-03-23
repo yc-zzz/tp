@@ -16,9 +16,9 @@ public class Ui {
 
     public String readInput() {
         System.out.println();
-        // System.out.println(ANSI_YELLOW);
+        System.out.print(ANSI_YELLOW);
         System.out.print("Enter a command: ");
-        // System.out.println(ANSI_RESET);
+        System.out.print(ANSI_RESET);
         return scanner.nextLine().trim();
     }
 
@@ -119,7 +119,7 @@ public class Ui {
     }
 
     public static void printWelcomeBanner() {
-        //System.out.println(ANSI_BRIGHT_GREEN);
+        System.out.print(ANSI_BRIGHT_GREEN);
         System.out.print("""
                     .___.        
                    /     \\       
@@ -132,6 +132,6 @@ public class Ui {
                  \\         /     
                   `-------`      
             """);
-        //System.out.println(ANSI_RESET);
+        System.out.print(ANSI_RESET);
     }
 }
