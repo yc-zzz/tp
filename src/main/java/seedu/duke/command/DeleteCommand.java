@@ -31,4 +31,9 @@ public class DeleteCommand extends Command {
         undoRedoManager.recordDelete(removed, listIndex);
         ui.showMessage("Deleted: " + removed);
     }
+
+    @Override
+    public boolean isMutating() {
+        return true;
+    }
 }

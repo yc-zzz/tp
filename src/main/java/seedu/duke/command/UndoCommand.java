@@ -36,4 +36,9 @@ public class UndoCommand extends Command {
             throw new MoneyBagProMaxException("Unknown action type.");
         }
     }
+
+    @Override
+    public boolean isMutating() {
+        return true;
+    }
 }

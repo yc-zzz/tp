@@ -9,4 +9,9 @@ public class ListCommand extends Command {
         assert list != null : "TransactionList should not be null.";
         ui.showList(list);
     }
+    
+    @Override
+    public boolean isMutating() {
+        return true;
+    }
 }
