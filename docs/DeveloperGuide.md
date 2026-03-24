@@ -112,43 +112,6 @@ Both commands adhere to the application's Command pattern structure. The diagram
 ### Future Improvements
 * **Time-Bound Summaries:** Upgrading the `summary` command to accept date parameters, allowing users to see summaries for specific months or weeks (e.g., `summary /from 2026-01-01 /to 2026-01-31`).
 
-## Income Class
-
-### Overview
-The `Income` class represents an income transaction in the application.
-It extends the abstract `Transaction` class, alongside `Expense`, sharing common fields: `category`, `amount`, `description`, and `date`.
-
-### Design
-`Income` enforces a fixed set of valid categories defined as a static list:
-
-| Category | Description |
-|---|---|
-| `salary` | Regular employment income |
-| `freelance` | Contract or freelance work |
-| `investment` | Returns from investments |
-| `business` | Business revenue |
-| `gift` | Monetary gifts received |
-| `misc` | Any other income |
-
-Category validity is enforced via an assertion in the constructor, consistent with the defensive programming approach used elsewhere in the codebase.
-Logging is configured at `WARNING` level to reduce noise during normal operation.
-
-### Key Methods
-- `getType()` — returns `"income"`, used to distinguish transaction types polymorphically at runtime.
-- `toString()` — formats the transaction for display (e.g. `[Income] salary "June paycheck" $3000.00 (2026-06-01)`).
-
-### Design Considerations
-The `Income` and `Expense` classes are intentionally kept symmetric in structure.
-Both extend `Transaction` and override `getType()` and `toString()`, making it straightforward to introduce new transaction types in future by simply extending `Transaction` and implementing these methods.
-Keeping the valid category list as a `static final` field on the class (rather than in the `Parser` or elsewhere) ensures validation logic stays close to the data it governs.
-
-### Alternatives Considered
-One alternative was to represent transaction types using an enum field on a single `Transaction` class rather than separate subclasses.
-However, using subclasses allows each type to define its own valid categories and formatting logic independently, which is more extensible as the application grows.
-
-### Future Improvements
-- Allow user-defined custom categories beyond the fixed list.
-- Add support for recurring income entries (e.g. monthly salary auto-logged).
 ---
 
 ## Product scope
