@@ -7,6 +7,7 @@ import seedu.duke.MoneyBagProMaxException;
 import seedu.duke.budget.Budget;
 import seedu.duke.command.Command;
 import seedu.duke.parser.Parser;
+import seedu.duke.transactionlist.RecurringTransactionList;
 import seedu.duke.transactionlist.TransactionList;
 import seedu.duke.ui.Ui;
 import seedu.duke.undoredo.UndoRedoManager;
@@ -38,7 +39,7 @@ public class IncomeTest {
     public void parseAddCommand_incomeCategory_addsIncomeObject() throws MoneyBagProMaxException {
         TransactionList list = new TransactionList();
         Ui ui = new Ui();
-        Parser parser = new Parser(new UndoRedoManager());
+        Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
 
         // Updated to use a valid income category
         Command command = parser.parse("add salary/50.00 desc/monthly d/2023-10-01");
@@ -81,7 +82,7 @@ public class IncomeTest {
     public void parseSummaryCommand_onlyIncome_printsCorrectTotals() throws MoneyBagProMaxException {
         TransactionList list = new TransactionList();
         Ui ui = new Ui();
-        Parser parser = new Parser(new UndoRedoManager());
+        Parser parser = new Parser(new UndoRedoManager(), new RecurringTransactionList());
 
         list.add(new Income("salary", 5000.00, "monthly", LocalDate.now()));
 
