@@ -36,10 +36,7 @@ class StorageTest {
         Files.deleteIfExists(Paths.get(TMP_FILE));
     }
 
-    // -------------------------------------------------------------------------
     // load()
-    // -------------------------------------------------------------------------
-
     @Test
     void load_noFileExists_createsEmptyFile() throws MoneyBagProMaxException {
         storage.load(list);
@@ -129,10 +126,7 @@ class StorageTest {
         assertEquals("", list.get(0).getDescription());
     }
 
-    // -------------------------------------------------------------------------
     // save()
-    // -------------------------------------------------------------------------
-
     @Test
     void save_emptyList_writesEmptyFile() throws MoneyBagProMaxException {
         storage.save(list);
@@ -170,10 +164,7 @@ class StorageTest {
         assertEquals("income", loaded.get(0).getType());
     }
 
-    // -------------------------------------------------------------------------
-    // Round-trip
-    // -------------------------------------------------------------------------
-
+    // save -> load tests
     @Test
     void load_expenseWithEmptyDescription_preservedCorrectly() throws MoneyBagProMaxException {
         list.add(new Expense("misc", 5.0, "", LocalDate.of(2026, 1, 15)));
