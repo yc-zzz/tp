@@ -11,9 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 // structure of test names: methodToTest_input_expectedOutput
-class ParserTest {
+class   ParserTest {
 
     @Test
     public void parse_sortByDate_returnsSortCommand() throws MoneyBagProMaxException {
@@ -66,5 +67,38 @@ class ParserTest {
         Parser parser = new Parser(new UndoRedoManager());
         Command command = parser.parse("redo");
         assertInstanceOf(RedoCommand.class, command);
+    }
+
+    @Test
+    public void parseFilterCommand_missingDates_throwsException() {
+        Parser parser = new Parser(new UndoRedoManager());
+
+        String input = "filter from/ to/";
+        MoneyBagProMaxException exception = assertThrows(MoneyBagProMaxException.class, () -> {
+            parser.parse(input);
+        });
+        assertTrue(exception.getMessage().contains("Missing 'from'"));
+    }
+
+    @Test
+    public void parseFilterCommand_invalidDateFormat_throwsException() {
+        Parser parser = new Parser(new UndoRedoManager());
+        String input = "filter from/31-12-2026 to/2026-12-31";
+
+        MoneyBagProMaxException exception = assertThrows(MoneyBagProMaxException.class, () -> {
+            parser.parse(input);
+        });
+        assertTrue(exception.getMessage().contains("Invalid date format — expected YYYY-MM-DD."));
+    }
+
+    @Test
+    public void parseFilterCommand_fromAfterTo_throwsException() {
+        Parser parser = new Parser(new UndoRedoManager());
+
+        String input = "filter from/2026-12-31 to/2026-01-01";
+        MoneyBagProMaxException exception = assertThrows(MoneyBagProMaxException.class, () -> {
+            parser.parse(input);
+        });
+        assertTrue(exception.getMessage().contains("The 'from' date cannot be after the 'to' date!"));
     }
 }
