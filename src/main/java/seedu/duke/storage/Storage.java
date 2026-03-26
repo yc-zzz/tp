@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.LinkedHashMap;
@@ -31,6 +32,8 @@ public class Storage {
     private static final String FIELD_SEP  = " | ";
     private static final String KV_SEP     = "=";
 
+    private static final List<String> VALID_TYPES = List.of("income", "expense");
+
 
     /**
      * Populates the transaction list from disk. Call once on app startup.
@@ -44,8 +47,8 @@ public class Storage {
             Files.createDirectories(Paths.get(DATA_DIR));
             Path p = Paths.get(DATA_FILE);
             if (!Files.exists(p)) {
-                Files.createFile(p); 
-                return; 
+                Files.createFile(p);
+                return;
             }
 
             while (!list.isEmpty()) {
@@ -57,33 +60,120 @@ public class Storage {
                 }
                 Map<String, String> f = parseLine(line);
                 if (f == null) {
+                    System.out.println("[WARN] Skipping malformed line (could not parse): " + line);
                     continue;
                 }
                 try {
-                    String type        = f.get("type");
-                    String category    = f.get("category");
-                    String amountStr   = f.get("amount");
-                    String description = f.getOrDefault("description", "");
-                    String dateStr     = f.get("date");
-                    if (type == null || category == null || amountStr == null || dateStr == null) {
-                        continue;
-                    }
-                    double amount  = Double.parseDouble(amountStr);
-                    LocalDate date = LocalDate.parse(dateStr);
-                    Transaction t = switch (type) {
-                    case "income"  -> new Income(category, amount, description, date);
-                    case "expense" -> new Expense(category, amount, description, date);
-                    default        -> null;
-                    };
+                    Transaction t = validateAndBuild(f, line);
                     if (t != null) {
                         list.add(t);
                     }
-                } catch (Exception e) {
-                    System.out.println("[WARN] Skipping malformed line: " + e.getMessage());
+                } catch (CorruptedEntryException e) {
+                    System.out.println("[WARN] Skipping corrupted entry: " + e.getMessage());
                 }
             }
         } catch (IOException e) {
             throw new MoneyBagProMaxException("Failed to load data: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Validates the fields of a parsed transaction and builds the Transaction object.
+     *
+     * @param f    Map of field names to values.
+     * @param line The original raw line, used for error context.
+     * @return A valid Transaction, or null if type is unrecognised.
+     * @throws CorruptedEntryException if any field is missing or invalid.
+     */
+    private Transaction validateAndBuild(Map<String, String> f, String line)
+            throws CorruptedEntryException {
+        validateFields(f, line);
+
+        String type        = f.get("type");
+        String category    = f.get("category");
+        String amountStr   = f.get("amount");
+        String description = f.getOrDefault("description", "");
+        String dateStr     = f.get("date");
+
+        validateType(type, line);
+        double amount  = validateAmount(amountStr, line);
+        LocalDate date = validateDate(dateStr, line);
+
+        return switch (type) {
+        case "income"  -> new Income(category, amount, description, date);
+        case "expense" -> new Expense(category, amount, description, date);
+        default        -> null;
+        };
+    }
+
+    /**
+     * Checks that all required fields are present and non-blank.
+     *
+     * @param f    Map of field names to values.
+     * @param line The original raw line, used for error context.
+     * @throws CorruptedEntryException if any required field is missing or blank.
+     */
+    private void validateFields(Map<String, String> f, String line)
+            throws CorruptedEntryException {
+        for (String field : new String[]{"type", "category", "amount", "date"}) {
+            if (f.get(field) == null || f.get(field).isBlank()) {
+                throw new CorruptedEntryException(
+                        "missing or empty field '" + field + "' in: " + line);
+            }
+        }
+    }
+
+    /**
+     * Checks that the transaction type is one of the known valid values.
+     *
+     * @param type The type string to validate.
+     * @param line The original raw line, used for error context.
+     * @throws CorruptedEntryException if the type is not recognised.
+     */
+    private void validateType(String type, String line) throws CorruptedEntryException {
+        if (!VALID_TYPES.contains(type)) {
+            throw new CorruptedEntryException(
+                    "unknown transaction type '" + type + "' in: " + line);
+        }
+    }
+
+    /**
+     * Parses and validates the amount string, ensuring it is a positive number.
+     *
+     * @param amountStr The amount string to validate.
+     * @param line      The original raw line, used for error context.
+     * @return The parsed amount as a double.
+     * @throws CorruptedEntryException if the amount is not a valid positive number.
+     */
+    private double validateAmount(String amountStr, String line) throws CorruptedEntryException {
+        double amount;
+        try {
+            amount = Double.parseDouble(amountStr);
+        } catch (NumberFormatException e) {
+            throw new CorruptedEntryException(
+                    "amount '" + amountStr + "' is not a valid number in: " + line);
+        }
+        if (amount <= 0) {
+            throw new CorruptedEntryException(
+                    "amount must be positive but was '" + amount + "' in: " + line);
+        }
+        return amount;
+    }
+
+    /**
+     * Parses and validates the date string as a YYYY-MM-DD date.
+     *
+     * @param dateStr The date string to validate.
+     * @param line    The original raw line, used for error context.
+     * @return The parsed LocalDate.
+     * @throws CorruptedEntryException if the date is not a valid YYYY-MM-DD date.
+     */
+    private LocalDate validateDate(String dateStr, String line) throws CorruptedEntryException {
+        try {
+            return LocalDate.parse(dateStr);
+        } catch (DateTimeParseException e) {
+            throw new CorruptedEntryException(
+                    "date '" + dateStr + "' is not a valid YYYY-MM-DD date in: " + line);
         }
     }
 
@@ -156,5 +246,14 @@ public class Storage {
                                                     "description" + KV_SEP + t.getDescription(),
                                                     "date"        + KV_SEP + t.getDate()
         );
+    }
+
+    /**
+     * Thrown when a transaction entry in the storage file fails validation.
+     */
+    private static class CorruptedEntryException extends Exception {
+        public CorruptedEntryException(String message) {
+            super(message);
+        }
     }
 }
