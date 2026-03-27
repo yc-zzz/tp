@@ -263,7 +263,8 @@ Exits the MoneyBagProMax application.
 
 **Q**: How do I transfer my data to another computer?
 
-**A**: {your answer here}
+**A**: Install the MoneyBagProMax application on the new computer and run it once to generate the default data file. 
+Then, overwrite the generated data/transactions.txt file with the one from your previous computer to transfer all your information.
 
 ---
 
