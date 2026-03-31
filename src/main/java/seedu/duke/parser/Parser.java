@@ -17,6 +17,7 @@ import seedu.duke.undoredo.UndoRedoManager;
 import seedu.duke.command.BudgetCommand;
 import seedu.duke.command.StatsCommand;
 import seedu.duke.command.FilterCommand;
+import seedu.duke.command.ExportCsvCommand;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -83,6 +84,11 @@ public class Parser {
                 throw new MoneyBagProMaxException("Invalid format. Use: filter from/YYYY-MM-DD to/YYYY-MM-DD");
             }
             return parseFilterCommand(arguments);
+        case "export-csv":
+            if (arguments.isEmpty()) {
+                throw new MoneyBagProMaxException("Usage: export-csv FILEPATH");
+            }
+            return new ExportCsvCommand(arguments);
         default:
             throw new MoneyBagProMaxException("Unknown command. Type `help` to see the list of available commands.");
         }
