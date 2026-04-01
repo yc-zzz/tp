@@ -2,6 +2,7 @@ package seedu.duke;
 
 import seedu.duke.budget.Budget;
 import seedu.duke.command.Command;
+import seedu.duke.command.GenerateRecurringCommand;
 import seedu.duke.parser.Parser;
 import seedu.duke.storage.Storage;
 import seedu.duke.transactionlist.RecurringTransactionList;
@@ -35,6 +36,14 @@ public class MoneyBagProMax {
         Ui ui = new Ui();
         Budget budget = new Budget();
         logger.info("Core components: TransactionList, Parser, UndoRedoManager and Ui initialised successfully.");
+        try {
+            new GenerateRecurringCommand(recurringList).execute(list, budget, ui);
+            if (!recurringList.isEmpty()) {
+                storage.saveRecurring(recurringList);
+            }
+        } catch (MoneyBagProMaxException e) {
+            logger.log(Level.WARNING, "Failed to auto-generate recurring transactions on startup: " + e.getMessage());
+        }
         ui.showWelcomeMessage();
         boolean isExit = false;
 
