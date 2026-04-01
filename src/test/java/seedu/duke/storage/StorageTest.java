@@ -233,6 +233,7 @@ class StorageTest {
     @Test
     void save_noDataDirectory_createsItAndSaves() throws MoneyBagProMaxException, IOException {
         Files.deleteIfExists(Paths.get(DATA_FILE));
+        Files.deleteIfExists(Paths.get("data/categories.txt"));
         Files.deleteIfExists(Paths.get("data"));
 
         list.add(new Expense("food", 10.0, "lunch",
