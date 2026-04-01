@@ -250,8 +250,6 @@ Creates a recurring transaction template. MoneyBagProMax will automatically gene
 - `FREQUENCY` must be one of: `daily`, `weekly`, `monthly` (case-insensitive)
 - `d/YYYY-MM-DD` sets the start date; defaults to today if omitted
 - The category determines whether the entry is an expense or income (same valid categories as `add`)
-- `rec/FREQUENCY` must appear **at the end** of the command — it cannot be placed before `desc/` or `d/`
-
 > [!NOTE]
 > For valid expense and income categories, see [Adding an Expense](#adding-an-expense-add-expense-category) and [Adding an Income](#adding-an-income-add-income-category).
 

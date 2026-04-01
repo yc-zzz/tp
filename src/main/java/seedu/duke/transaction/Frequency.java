@@ -45,7 +45,7 @@ public enum Frequency {
         case MONTHLY:
             return date.plusMonths(1);
         default:
-            return date.plusMonths(1);
+            throw new IllegalStateException("Unknown frequency: " + this);
         }
     }
 }

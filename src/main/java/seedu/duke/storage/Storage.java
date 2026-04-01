@@ -359,6 +359,10 @@ public class Storage {
                         continue;
                     }
                     double amount      = Double.parseDouble(amountStr);
+                    if (amount <= 0) {
+                        System.out.println("[WARN] Skipping recurring line with non-positive amount: " + line);
+                        continue;
+                    }
                     Frequency freq     = Frequency.fromString(freqStr);
                     LocalDate start    = LocalDate.parse(startStr);
                     RecurringTransaction rt = new RecurringTransaction(category, amount, description, freq, start);
