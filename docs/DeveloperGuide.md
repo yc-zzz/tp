@@ -267,6 +267,74 @@ The following sequence diagram illustrates the interaction when a user sorts tra
 
 ---
 
+## Edit Transaction Feature
+
+### Overview
+The `edit` command allows users to replace an existing transaction in the list with new values.
+Rather than modifying a transaction's fields in place, the command removes the old transaction
+and inserts a newly constructed one at the same index. This is consistent with the immutability
+of the `Transaction` class hierarchy, where all fields are declared `protected final`.
+
+### Architecture and Flow
+When the user enters a command such as `edit 1 food/20.00 desc/dinner d/2026-03-20`, the input
+is passed from the `Ui` to the `Parser`. The `Parser` calls `parseEditCommand()`, which extracts
+the 1-based target index, category, amount, optional description, and optional date. An
+`EditCommand` is created with these values and returned to the main loop. During execution,
+`EditCommand` validates the index bounds and resolves the category to either an `Income` or
+`Expense` object. If both checks pass, the old transaction is removed, the new one is inserted
+at the same position, the change is recorded in `UndoRedoManager`, and the user is shown a
+before/after confirmation via `Ui`.
+
+### Sequence Diagram
+The following sequence diagram illustrates the interactions when a user edits a transaction.
+
+![Edit Sequence Diagram](diagrams/EditSequenceDiagram.png)
+
+### Implementation Details
+- **Parsing:** `Parser.parseEditCommand()` splits the argument string to extract the index, then
+  delegates to the same `parseAmount()`, `parseDescription()`, and `parseDate()` private helpers
+  used by `parseAddCommand()`. Reusing these helpers ensures consistent parsing behaviour across
+  both commands.
+- **Category resolution:** `EditCommand.execute()` checks the category string against
+  `Income.VALID_CATEGORIES` and `Expense.VALID_CATEGORIES` to decide whether to construct an
+  `Income` or `Expense` object. If the category is not found in either list, an error message is
+  displayed and the list is left unchanged.
+- **Replace instead of modify:** The old transaction is removed with `TransactionList.remove(index)`,
+  which returns the removed object. The new transaction is then immediately inserted at the same
+  index with `TransactionList.insert(index, newTransaction)`. Because removal and insertion always
+  happen together, the list size and all other indices remain stable throughout.
+- **Undo/Redo integration:** After a successful edit, `UndoRedoManager.recordEdit()` is called
+  with both the old and new transactions and the list index. This allows `UndoCommand` to restore
+  the original transaction and `RedoCommand` to reapply the replacement. See the
+  [Undo and Redo Feature](#undo-and-redo-feature) section for how `EDIT` actions are reversed.
+- **Auto-save trigger:** `EditCommand` inherits `isMutating()` returning `true` from the base
+  `Command` class, which triggers auto-save to storage after execution.
+
+### Design Considerations
+- **Immutable replacement:** The `Transaction` class declares all fields
+  `protected final`, so editing a transaction requires constructing a new object rather than
+  updating fields. This immutability simplifies reasoning about transaction state, eliminates the
+  risk of partial updates, and aligns naturally with how `UndoRedoManager` stores snapshots.
+- **Shared parsing helpers:** Reusing `parseAmount()`, `parseDescription()`, and `parseDate()`
+  between `parseAddCommand()` and `parseEditCommand()` avoids duplicating parsing logic. Any
+  future change to how amounts, descriptions, or dates are parsed will automatically apply to
+  both commands.
+- **Validation before modification:** Both the index bounds check and the category validation
+  occur before any list modification. This ensures the list is never left in a partially-edited
+  state if either check fails.
+
+### Alternatives Considered
+- **Delegating to `DeleteCommand` + `AddCommand`:** Composing an edit from an existing delete
+  followed by an add would reuse existing logic, but would push two actions onto the undo stack
+  instead of one — meaning the user would need to undo twice to revert a single edit. The
+  dedicated `EditCommand` with `recordEdit()` keeps the undo stack accurate.
+
+### Future Improvements
+- Support partial edits (e.g., `edit 1 desc/new-description`) to update a single field without
+  having to re-enter the amount, category, and date.
+
+---
+
 ## Undo and Redo Feature
 
 ### Overview

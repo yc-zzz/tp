@@ -1,9 +1,9 @@
 @startuml
 actor User
-participant Ui
-participant Parser
-participant DeleteCommand
-participant TransactionList
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":DeleteCommand" as DeleteCommand
+participant ":TransactionList" as TransactionList
 
 User -> Ui : enter "delete 2"
 Ui -> Parser : parse("delete 2")

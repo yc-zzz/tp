@@ -21,6 +21,8 @@ manage budgets, and gain insights into your spending habits via a simple applica
     - [Managing your Budget: `budget`](#managing-your-budget-budget)
     - [Viewing Spending Statistics: `stats`](#viewing-spending-statistics-stats)
     - [Filtering Transactions: `filter`](#filtering-transactions-filter)
+    - [Exporting to CSV: `export-csv`](#exporting-to-csv-export-csv)
+    - [Exporting Data File: `export-data`](#exporting-data-file-export-data)
     - [Exiting the Application: `exit`](#exiting-the-application-exit)
 - [Command Summary](#command-summary)
 
@@ -75,7 +77,7 @@ Adds an expense by the given category, amount, optional description and optional
 ### Adding an Income: `add [income-category]`
 (// add description here)
 
-**Format**: 
+**Format**:
 
 **Examples**:
 
@@ -89,7 +91,7 @@ Displays all recorded transactions in a numbered list.
 **Examples**:
 - `list` Displays all transactions currently stored in the application.
 
-> [!NOTE] 
+> [!NOTE]
 > If there are no transactions recorded, the application will show an empty-list message instead.
 ---
 
@@ -249,6 +251,35 @@ Filters and displays only the transactions that fall within a specified date ran
 
 ---
 
+### Exporting to CSV: `export-csv`
+Exports all transactions to a `.csv` file for use in external tools like Microsoft Excel or Google Sheets.
+
+**Format**: `export-csv FILEPATH`
+
+**CSV columns**: `date`, `type`, `category`, `description`, `amount`
+
+**Examples**:
+- `export-csv ~/transactions.csv` Exports all transactions to `transactions.csv` in your home directory.
+- `export-csv reports/june.csv` Exports to a `reports/` subfolder.
+
+> [!NOTE]
+> This is for external analysis only — the CSV cannot be reimported into MoneyBagProMax. For transferring data between devices, use `export-data` instead.
+
+---
+
+### Exporting Data File: `export-data`
+Copies the internal data file to a location of your choice. Useful for backing up your data or transferring it to another device.
+
+**Format**: `export-data FILEPATH`
+
+**Examples**:
+- `export-data ~/backup/transactions.txt` Copies the data file to a backup folder.
+
+> [!NOTE]
+> The exported file can be used to restore your data on another device. See the [FAQ](#faq) for transfer instructions.
+
+---
+
 ### Exiting the Application: `exit`
 (// add description here)
 
@@ -262,17 +293,16 @@ Filters and displays only the transactions that fall within a specified date ran
 
 **Q**: How do I transfer my data to another computer?
 
-**A**: Install the MoneyBagProMax application on the new computer and run it once to generate the default data file. 
+**A**: Install the MoneyBagProMax application on the new computer and run it once to generate the default data file.
 Then, overwrite the generated data/transactions.txt file with the one from your previous computer to transfer all your information.
 
 ---
 
 ## Editing the Data File
 
-MoneyBagProMax automatically saves your task data in a text file located at `./data/transactions.txt`, relative to the directory where you run the program. 
-Advanced users can update their tasks by directly editing this file.
+MoneyBagProMax automatically saves your task data in a text file located at `./data/transactions.txt`, relative to the directory where you run the program.
 
-> ⚠️**Caution:** Be cautious when editing the file directly, as improper formatting may cause errors or data loss when the application is next launched.
+> ⚠️**Caution:** Be cautious when editing the file directly, as there are guards against file corruption and improper formatting. Failure to pass these checks may cause errors or data loss when the application is next launched.
 
 ---
 
@@ -294,5 +324,6 @@ Advanced users can update their tasks by directly editing this file.
 | **Budget Status** | `budget status`                                                   | —                                              |
 | **Stats**       | `stats`                                                             | —                                              |
 | **Filter**      | `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`                         | `filter from/2026-01-01 to/2026-03-31`         |
+| **Export CSV**  | `export-csv FILEPATH`                                               | `export-csv ~/transactions.csv`                |
+| **Export Data** | `export-data FILEPATH`                                              | `export-data ~/backup/transactions.txt`         |
 | **Exit**        | `exit`                                                              | —                                              |
-

@@ -1,9 +1,9 @@
 @startuml
 actor User
-participant Ui
-participant Parser
-participant SortCommand
-participant TransactionList
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":SortCommand" as SortCommand
+participant ":TransactionList" as TransactionList
 
 User -> Ui : enter "sort by/date"
 Ui -> Parser : parse("sort by/date")

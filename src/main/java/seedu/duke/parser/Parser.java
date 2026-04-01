@@ -17,6 +17,8 @@ import seedu.duke.undoredo.UndoRedoManager;
 import seedu.duke.command.BudgetCommand;
 import seedu.duke.command.StatsCommand;
 import seedu.duke.command.FilterCommand;
+import seedu.duke.command.ExportCsvCommand;
+import seedu.duke.command.ExportTxtCommand;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -59,8 +61,7 @@ public class Parser {
         case "delete":
             return parseDeleteCommand(arguments);
         case "summary":
-            String summaryType = arguments.isEmpty() ? "all" : arguments;
-            return new SummaryCommand(summaryType);
+            return parseSummaryCommand(arguments);
         case "find":
             if (arguments.isEmpty()) {
                 throw new MoneyBagProMaxException("Please provide a keyword to search for.");
@@ -83,6 +84,16 @@ public class Parser {
                 throw new MoneyBagProMaxException("Invalid format. Use: filter from/YYYY-MM-DD to/YYYY-MM-DD");
             }
             return parseFilterCommand(arguments);
+        case "export-csv":
+            if (arguments.isEmpty()) {
+                throw new MoneyBagProMaxException("Usage: export-csv FILEPATH");
+            }
+            return new ExportCsvCommand(arguments);
+        case "export-data":
+            if (arguments.isEmpty()) {
+                throw new MoneyBagProMaxException("Usage: export-data FILEPATH");
+            }
+            return new ExportTxtCommand(arguments);
         default:
             throw new MoneyBagProMaxException("Unknown command. Type `help` to see the list of available commands.");
         }
@@ -308,5 +319,22 @@ public class Parser {
             throw new MoneyBagProMaxException("Missing date values! "
                     + "Use: filter from/YYYY-MM-DD to/YYYY-MM-DD");
         }
+    }
+
+    private Command parseSummaryCommand(String arguments) throws MoneyBagProMaxException {
+        if (arguments.isEmpty()) {
+            return new SummaryCommand("all");
+        }
+
+        if (arguments.startsWith("month/")) {
+            String datePart = arguments.replace("month/", "").trim();
+            // we have basic validation for YYYY-MM format
+            if (!datePart.matches("\\d{4}-\\d{2}")) {
+                throw new MoneyBagProMaxException("Invalid date format. Use: summary month/YYYY-MM (e.g., 2026-04)");
+            }
+            // we use "month" as the type to tell the command to filter by the provided date
+            return new SummaryCommand("month", datePart);
+        }
+        return new SummaryCommand(arguments);
     }
 }
