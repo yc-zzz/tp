@@ -1,10 +1,10 @@
 @startuml
 
 actor User
-participant Ui
-participant Parser
-participant SummaryCommand
-participant TransactionList
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":SummaryCommand" as SummaryCommand
+participant ":TransactionList" as TransactionList
 
 User -> Ui : "summary food"
 activate Ui

@@ -1,10 +1,10 @@
 @startuml
 
 actor User
-participant Ui
-participant Parser
-participant FindCommand
-participant TransactionList
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":FindCommand" as FindCommand
+participant ":TransactionList" as TransactionList
 
 User -> Ui : "find food"
 activate Ui

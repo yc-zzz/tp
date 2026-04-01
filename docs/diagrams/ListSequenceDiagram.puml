@@ -1,9 +1,9 @@
 @startuml
 actor User
-participant Ui
-participant Parser
-participant ListCommand
-participant TransactionList
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":ListCommand" as ListCommand
+participant ":TransactionList" as TransactionList
 
 User -> Ui : enter "list"
 Ui -> Parser : parse("list")

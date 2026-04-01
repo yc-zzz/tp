@@ -1,10 +1,10 @@
 @startuml
 actor User
-participant Ui
-participant Parser
-participant UndoCommand
-participant UndoRedoManager
-participant TransactionList
+participant ":Ui" as Ui
+participant ":Parser" as Parser
+participant ":UndoCommand" as UndoCommand
+participant ":UndoRedoManager" as UndoRedoManager
+participant ":TransactionList" as TransactionList
 
 User -> Ui : enter "undo"
 Ui -> Parser : parse("undo")
