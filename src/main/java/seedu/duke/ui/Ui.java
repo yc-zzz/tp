@@ -134,6 +134,15 @@ public class Ui {
         System.out.println("===========================");
     }
 
+    public void showMonthlySummary(double income, double expense) {
+        assert income >= 0 : "Income total should not be negative";
+        assert expense >= 0 : "Expense total should not be negative";
+        System.out.printf("Total Income: $%.2f%n", income);
+        System.out.printf("Total Expense: $%.2f%n", expense);
+        System.out.printf("Net Balance: $%.2f%n", (income - expense));
+        System.out.println("===========================");
+    }
+
     public void showCategorySummary(String category, double categoryTotal) {
         assert category != null && !category.isBlank() : "Category should not be null or blank";
         assert categoryTotal >= 0 : "Category total should not be negative";
