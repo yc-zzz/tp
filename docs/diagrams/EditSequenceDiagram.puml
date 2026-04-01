@@ -1,0 +1,27 @@
+@startuml
+actor User
+participant Ui
+participant Parser
+participant EditCommand
+participant TransactionList
+participant UndoRedoManager
+
+User -> Ui : enter "edit 1 food/20.00 desc/dinner d/2026-03-20"
+Ui -> Parser : parse("edit 1 food/20.00 ...")
+Parser -> Parser : parseEditCommand("1 food/20.00 ...")
+note right of Parser : Extracts index, category, amount,\ndescription, and date
+Parser --> Ui : EditCommand
+Ui -> EditCommand : execute(list, budget, ui)
+
+alt invalid index
+    EditCommand -> Ui : showMessage("Invalid transaction index.")
+else invalid category
+    EditCommand -> Ui : showMessage("Invalid category ...")
+else valid edit
+    EditCommand -> TransactionList : remove(index)
+    TransactionList --> EditCommand : oldTransaction
+    EditCommand -> TransactionList : insert(index, newTransaction)
+    EditCommand -> UndoRedoManager : recordEdit(oldTransaction, newTransaction, index)
+    EditCommand -> Ui : showMessage("Edited transaction ...")
+end
+@enduml
