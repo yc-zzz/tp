@@ -524,6 +524,152 @@ Possible future improvements include supporting multiple save files or profiles,
 
 ---
 
+## Recurring Transactions Feature
+
+### Overview
+The recurring transactions feature lets users define a transaction template that fires automatically
+on a schedule (daily, weekly, or monthly). Instead of entering the same expense or income entry
+repeatedly, the user creates a template once; MoneyBagProMax then generates the corresponding
+`Income` or `Expense` entries for every due date, both on startup and on demand via `gen-rec`.
+
+The four commands are: `add ... rec/FREQUENCY` (create template), `list-rec` (view templates),
+`delete-rec INDEX` (remove template), and `gen-rec` (trigger generation manually).
+
+### Architecture and Flow
+
+The feature adds two new packages alongside the existing ones:
+- **Model** — `RecurringTransaction` and `Frequency` in `transaction/`
+- **List** — `RecurringTransactionList` in `transactionlist/`
+- **Commands** — `AddRecurringCommand`, `ListRecurringCommand`, `DeleteRecurringCommand`,
+  `GenerateRecurringCommand` in `command/`
+
+The main application loop (`MoneyBagProMax`) owns a single `RecurringTransactionList` instance.
+On startup it calls `storage.loadRecurring()` to hydrate the list from disk, then immediately
+runs `GenerateRecurringCommand` to materialise any pending transactions before the REPL begins.
+After every command, the loop checks `command.isMutating()` (save `transactions.txt`) and
+`command.isMutatingRecurring()` (save `recurring.txt`) independently.
+
+### Implementation Details
+
+#### RecurringTransaction model
+`RecurringTransaction` is **not** a subclass of `Transaction`. It is a template object that holds
+the parameters needed to generate concrete `Income` or `Expense` entries:
+
+| Field | Type | Description |
+|---|---|---|
+| `category` | `String` | Category label (determines income vs. expense) |
+| `amount` | `double` | Fixed monetary value for every generated entry |
+| `description` | `String` | Optional label copied to every generated entry |
+| `frequency` | `Frequency` | How often to generate (DAILY / WEEKLY / MONTHLY) |
+| `startDate` | `LocalDate` | First date a transaction should be generated |
+| `transactionType` | `String` | `"income"` if category is in `Income.VALID_CATEGORIES`, else `"expense"` |
+| `lastGeneratedDate` | `LocalDate` | Most recent date a transaction was generated; `null` if never run |
+
+All fields except `lastGeneratedDate` are `final`. `setLastGeneratedDate()` is the only mutator
+and is called by `GenerateRecurringCommand` after each generated entry to advance the watermark.
+
+#### Frequency enum
+`Frequency` has three values: `DAILY`, `WEEKLY`, `MONTHLY`. Two methods drive the feature:
+- `fromString(String s)` — case-insensitive parse; throws `MoneyBagProMaxException` for unknown values.
+- `next(LocalDate date)` — advances a date by one period using `LocalDate.plusDays(1)`,
+  `plusWeeks(1)`, or `plusMonths(1)` respectively. This handles month-length differences correctly.
+
+#### RecurringTransactionList
+A thin wrapper around `ArrayList<RecurringTransaction>` with the same interface as `TransactionList`
+(`add`, `get`, `remove`, `size`, `isEmpty`). Assertions guard index bounds; logging is at WARNING
+level, matching the convention used by `TransactionList`.
+
+#### Commands
+
+**AddRecurringCommand** validates the category against `Income.VALID_CATEGORIES`,
+`Expense.VALID_CATEGORIES`, and any custom categories managed by `CategoryManager`. If valid,
+it constructs a `RecurringTransaction` and appends it to `RecurringTransactionList`.
+`isMutatingRecurring()` returns `true` so the recurring list is persisted after execution.
+
+**ListRecurringCommand** iterates `RecurringTransactionList` and prints each template with a
+1-based index. If the list is empty it shows an informational message. It does not mutate state.
+
+**DeleteRecurringCommand** removes a template by 1-based index. It validates the index bounds
+and confirms deletion via `Ui`. Crucially, it only removes the template — any `Income` or
+`Expense` entries that were already generated from the template remain in `TransactionList`.
+`isMutatingRecurring()` returns `true`.
+
+**GenerateRecurringCommand** is the core of the feature. Its `execute()` method:
+1. Gets today's date via `LocalDate.now()`.
+2. For each template in `RecurringTransactionList`:
+   - Determines `nextDate`: `startDate` if `lastGeneratedDate` is `null`, otherwise
+     `frequency.next(lastGeneratedDate)`.
+   - Enters a `while (!nextDate.isAfter(today))` loop:
+     - Creates an `Income` or `Expense` at `nextDate` via `createTransaction()`.
+     - Adds it to `TransactionList`.
+     - Calls `rt.setLastGeneratedDate(nextDate)` to advance the watermark.
+     - Advances `nextDate` by one period.
+3. Reports the count of generated transactions per template.
+
+This design ensures each due date is generated exactly once: if the app is closed mid-week, the
+next startup will generate all missing dates up to today without duplicates.
+
+Both `isMutating()` and `isMutatingRecurring()` return `true` for `GenerateRecurringCommand`,
+because it writes to both `TransactionList` (regular transactions) and the recurring watermarks.
+
+#### isMutatingRecurring() contract
+The base `Command` class declares `isMutatingRecurring()` returning `false`. Commands that
+modify `RecurringTransactionList` — `AddRecurringCommand`, `DeleteRecurringCommand`, and
+`GenerateRecurringCommand` — override it to return `true`. The main loop then calls
+`storage.saveRecurring(recurringList)` only when needed, avoiding redundant disk writes.
+
+#### Storage persistence
+Recurring templates are persisted separately in `data/recurring.txt`, independent of the main
+`data/transactions.txt`. Each line uses a pipe-delimited key=value format prefixed with `[REC]`:
+```
+[REC] | category=food | amount=10.0 | description=lunch | frequency=daily | startDate=2026-04-01 | lastGeneratedDate=2026-04-02
+```
+`Storage.saveRecurring()` serializes every template via `serializeRecurringLine()` and writes
+atomically using a temp file (`recurring.txt.tmp` → `recurring.txt`), identical to the strategy
+used for `transactions.txt`. On load, `parseRecurringLine()` splits on `|`, builds a key=value
+map, and reconstructs each `RecurringTransaction`; malformed lines are skipped with a warning.
+
+#### Auto-generation on startup
+In `MoneyBagProMax.main()`, after loading both data files, the application runs:
+```java
+new GenerateRecurringCommand(recurringList).execute(transactionList, budget, ui);
+```
+This ensures that any transactions that became due while the app was closed are immediately
+materialised when the user opens the app, without requiring a manual `gen-rec` call.
+
+### Design Considerations
+- **Template separate from Transaction:** Keeping `RecurringTransaction` out of the `Transaction`
+  hierarchy means `TransactionList` and all existing commands (`list`, `delete`, `edit`, `undo`)
+  never need to handle template objects. The two lists are cleanly independent.
+- **Watermark over date range:** Storing only `lastGeneratedDate` (one date per template) rather
+  than a set of all generated dates uses O(1) storage per template. Correctness relies on the
+  LIFO assumption: `GenerateRecurringCommand` always advances the watermark monotonically, and
+  the user cannot delete individual generated transactions and re-generate them.
+- **Separate save flag (`isMutatingRecurring`):** Because most commands do not touch the recurring
+  list, a separate flag avoids rewriting `recurring.txt` on every add/delete of a regular
+  transaction. The two files are written independently.
+- **Auto-generation on startup:** Running `GenerateRecurringCommand` at launch means the user
+  always sees an up-to-date transaction list without remembering to type `gen-rec`. The explicit
+  `gen-rec` command is provided for users who want to force generation mid-session.
+
+### Alternatives Considered
+- **Subclassing Transaction:** Making `RecurringTransaction` extend `Transaction` would allow it
+  to be stored in `TransactionList`. However, this would cause recurring templates to appear in
+  `list`, `summary`, and `find` outputs, and would require all existing commands to filter them
+  out. The separate list approach preserves backward compatibility with all existing commands.
+- **Storing all generated dates:** Persisting a set of every generated date per template would
+  allow safe regeneration after a user manually deletes a generated transaction. This was rejected
+  because it is unbounded in size (a daily template running for a year produces 365 stored dates),
+  and the expected use case does not require regeneration after manual deletion.
+
+### Future Improvements
+- Support an `end-date` on recurring templates so they stop automatically after a deadline.
+- Integrate `GenerateRecurringCommand` into the undo/redo system so generated transactions can
+  be rolled back as a single action.
+- Allow editing a recurring template (currently users must delete and re-add).
+
+---
+
 ## Product scope
 ### Target user profile
 
