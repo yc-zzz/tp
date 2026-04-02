@@ -1,5 +1,8 @@
 @startuml
-abstract class Command {
+hide circle
+skinparam classAttributeIconSize 0
+
+class "{abstract}\nCommand" as Command {
     +execute(list, budget, ui)
     +isMutating() : boolean
     +isMutatingRecurring() : boolean
