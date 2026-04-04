@@ -1,0 +1,50 @@
+@startuml CategoryClassDiagram
+hide circle
+
+skinparam classAttributeIconSize 0
+
+class "{abstract}\nCommand" as Command {
+  +execute(list: TransactionList, budget: Budget, ui: Ui): void
+  +isMutating(): boolean
+}
+
+class CategoryCommand {
+  -action: String
+  -name: String
+  +CategoryCommand(action: String, name: String)
+  +execute(list: TransactionList, budget: Budget, ui: Ui): void
+  +isMutating(): boolean
+}
+
+class CategoryManager {
+  {static} -instance: CategoryManager
+  -customCategories: Set<String>
+  {static} +getInstance(): CategoryManager
+  +load(): void
+  +addCustomCategory(name: String): boolean
+  +removeCustomCategory(name: String): boolean
+  +isValidExpenseCategory(category: String): boolean
+  +getAllExpenseCategories(): List<String>
+  +getCustomCategories(): Set<String>
+}
+
+class TransactionList {
+  +get(i: int): Transaction
+  +size(): int
+}
+
+class Ui {
+  +showMessage(message: String): void
+}
+
+class Expense {
+  --
+  {static} +VALID_CATEGORIES: List<String>
+}
+
+Command <|-- CategoryCommand
+CategoryCommand --> CategoryManager
+CategoryCommand ..> TransactionList
+CategoryCommand ..> Ui
+CategoryManager --> Expense
+@enduml

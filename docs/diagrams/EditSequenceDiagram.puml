@@ -7,11 +7,22 @@ participant ":TransactionList" as TransactionList
 participant ":UndoRedoManager" as UndoRedoManager
 
 User -> Ui : enter "edit 1 food/20.00 desc/dinner d/2026-03-20"
+activate Ui
+
 Ui -> Parser : parse("edit 1 food/20.00 ...")
+activate Parser
+
 Parser -> Parser : parseEditCommand("1 food/20.00 ...")
+activate Parser #LightGray
 note right of Parser : Extracts index, category, amount,\ndescription, and date
+Parser --> Parser
+deactivate Parser
+
 Parser --> Ui : EditCommand
+deactivate Parser
+
 Ui -> EditCommand : execute(list, budget, ui)
+activate EditCommand
 
 alt invalid index
     EditCommand -> Ui : showMessage("Invalid transaction index.")
@@ -19,9 +30,24 @@ else invalid category
     EditCommand -> Ui : showMessage("Invalid category ...")
 else valid edit
     EditCommand -> TransactionList : remove(index)
+    activate TransactionList
     TransactionList --> EditCommand : oldTransaction
+    deactivate TransactionList
+
     EditCommand -> TransactionList : insert(index, newTransaction)
+    activate TransactionList
+    TransactionList --> EditCommand
+    deactivate TransactionList
+
     EditCommand -> UndoRedoManager : recordEdit(oldTransaction, newTransaction, index)
+    activate UndoRedoManager
+    UndoRedoManager --> EditCommand
+    deactivate UndoRedoManager
+
     EditCommand -> Ui : showMessage("Edited transaction ...")
 end
+
+deactivate EditCommand
+deactivate Ui
+
 @enduml

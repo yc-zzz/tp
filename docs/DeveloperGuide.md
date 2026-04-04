@@ -561,6 +561,42 @@ Possible future improvements include supporting multiple save files or profiles,
 
 ---
 
+## Export Feature
+
+### Overview
+The export feature allows users to export their transaction data to an external file for use outside the application.
+Two export formats are supported: CSV (via `CsvExporter`) and TXT (via `TextFileExporter`).
+Both exporters are located in the `seedu.duke.storage` package alongside the `Storage` class.
+
+### CSV Export — `CsvExporter`
+`CsvExporter.export(TransactionList list, String outputPath)` iterates over the `TransactionList` and writes a CSV file to the specified output path.
+The first line of the file is always the header row: `date,type,category,description,amount`.
+Each subsequent line corresponds to one transaction, with fields serialized in the same order as the header.
+Values that contain commas, double quotes, or newlines are wrapped in double quotes and have any internal double quotes escaped by doubling them, following standard CSV escaping rules.
+If the write fails, a `MoneyBagProMaxException` is thrown with the underlying I/O error message.
+
+The output is intended for consumption by CSV-compatible programs such as spreadsheet applications, or for data interchange between tools.
+
+### TXT Export — `TextFileExporter`
+`TextFileExporter.export(String outputPath)` copies the existing `data/transactions.txt` file directly to the specified output path using `StandardCopyOption.REPLACE_EXISTING`.
+The output file is in the same pipe-delimited `[TXN]` format used internally by `Storage`, making it suitable for loading into another instance of MoneyBagProMax.
+If the source data file does not exist, a `MoneyBagProMaxException` is thrown. I/O failures during the copy are also surfaced as `MoneyBagProMaxException`.
+
+### Design Considerations
+The two exporters are intentionally kept separate rather than unified under a single export interface.
+`CsvExporter` operates on the in-memory `TransactionList` and constructs the output programmatically, while `TextFileExporter` operates directly on the data file on disk.
+This distinction reflects their different purposes: CSV export is for interoperability with external programs, while TXT export is for portability between instances of the application.
+Neither exporter modifies any application state, so they do not implement `isMutating()` and do not trigger a save of `transactions.txt`.
+
+### Alternatives Considered
+A single unified exporter with a format parameter was considered, but rejected because the two exporters have fundamentally different data sources — one reads from memory, the other from disk — making a shared abstraction awkward without adding unnecessary complexity.
+JSON was considered as an additional export format but was excluded for the same reason as in the storage design: it would require a third-party library dependency.
+
+### Future Improvements
+Possible future improvements include adding an export command accessible from the REPL so users can trigger exports without restarting the application, supporting custom output field selection for CSV exports, and adding a JSON export format if a suitable zero-dependency serializer is introduced elsewhere in the codebase.
+
+---
+
 ## Recurring Transactions Feature
 
 ### Overview
@@ -677,7 +713,7 @@ map, and reconstructs each `RecurringTransaction`; malformed lines are skipped w
 
 #### Auto-generation on startup
 In `MoneyBagProMax.main()`, after loading both data files, the application runs:
-```java
+```
 new GenerateRecurringCommand(recurringList).execute(transactionList, budget, ui);
 ```
 This ensures that any transactions that became due while the app was closed are immediately
