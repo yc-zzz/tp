@@ -35,13 +35,13 @@ end
 
 alt matches > 0
     FindCommand -> Ui : showMessage(...)
-    activate Ui
+    activate Ui #lightgrey
     note right: Displays the number of matches\nand each matching transaction
     Ui --> FindCommand
     deactivate Ui
 else no matches found
     FindCommand -> Ui : showMessage(...)
-    activate Ui
+    activate Ui #lightgrey
     Ui --> FindCommand
     deactivate Ui
 end

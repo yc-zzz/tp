@@ -35,12 +35,12 @@ end
 
 alt summaryType == "all"
     SummaryCommand -> Ui : showOverallSummary(...)
-    activate Ui
+    activate Ui #LightGray
     Ui --> SummaryCommand
     deactivate Ui
 else specific category
     SummaryCommand -> Ui : showCategorySummary(...)
-    activate Ui
+    activate Ui #LightGray
     Ui --> SummaryCommand
     deactivate Ui
 end
