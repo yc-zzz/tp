@@ -79,6 +79,9 @@ Adds an expense by the given category, amount, optional description and optional
 > [!NOTE]
 > If the date is omitted, it defaults to today's date. If the description is omitted, the transaction is recorded without one.
 
+> [!NOTE]
+> The expense category input is case-insensitive.
+
 ---
 
 ### Adding an Income: `add [income-category]`
@@ -92,6 +95,9 @@ Adds an income transaction to your list.
 - `add freelance/150` Adds a freelance income of $150.00 with today's date and no description.
 
 > [!NOTE] If the date is omitted, it defaults to today's date. If the description is omitted, the transaction is recorded without one.
+
+> [!NOTE]
+> The income category input is case-insensitive.
 
 ---
 
@@ -124,7 +130,7 @@ Searches for transactions that contain a specific keyword in their category, des
 ### Viewing a Summary: `summary`
 Displays overall totals or specific category totals for your transactions.
 
-**Format**: `summary [TYPE]`
+**Format**: `summary [TYPE] [month/YYYY-MM]`
 
 **Valid types**: `all`, `expense`, `income`, or any specific category (e.g. `food`, `salary`)
 
@@ -132,7 +138,11 @@ Displays overall totals or specific category totals for your transactions.
 - `summary all` Shows the total income, total expenses, and net balance.
 - `summary expense` Shows the total amount spent across all expense categories.
 - `summary food` Shows the total amount spent specifically on food.
+- `summary month/2026-03` Shows the total income, expenses, and net balance for that particular month.
+- `summary food month/2026-04` Shows you the total expense for 2026-04.
 
+> [!NOTE]
+> The input category is case-insensitive.
 ---
 
 ### Sorting Transactions: `sort`
@@ -404,7 +414,7 @@ MoneyBagProMax automatically saves your transaction data in three text files, bo
 | **Add Income**         | `add [income-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`        | `add salary/500 desc/allowance d/2026-03-01` |
 | **List**               | `list`                                                                 | —                                            |
 | **Find**               | `find KEYWORD`                                                         | `find lunch`                                 |
-| **Summary**            | `summary [TYPE]`                                                       | `summary all`                                |
+| **Summary**            | `summary [TYPE] [month/YYYY-MM]`                                       | `summary all`                                |
 | **Sort**               | `sort by/CRITERIA`                                                     | `sort by/date`                               |
 | **Delete**             | `delete ENTRY_INDEX`                                                   | `delete 3`                                   |
 | **Edit**               | `edit INDEX [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`        | `edit 3 food/20 desc/dinner d/2026-03-20`    |
