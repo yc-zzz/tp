@@ -50,4 +50,9 @@ public class BudgetCommand extends Command {
         bar.append("] ").append(String.format("%.1f%%", percent));
         return bar.toString();
     }
+
+    @Override
+    public boolean isMutating() {
+        return action.equals("set");
+    }
 }

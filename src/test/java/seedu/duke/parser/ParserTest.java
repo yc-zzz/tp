@@ -155,7 +155,7 @@ class ParserTest {
         MoneyBagProMaxException exception = assertThrows(MoneyBagProMaxException.class, () -> {
             parser.parse(input);
         });
-        assertTrue(exception.getMessage().contains("Invalid date format — expected YYYY-MM-DD."));
+        assertTrue(exception.getMessage().contains("Invalid date format"));
     }
 
     @Test

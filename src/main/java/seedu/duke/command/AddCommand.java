@@ -52,5 +52,8 @@ public class AddCommand extends Command {
                     + " Valid income categories: " + Income.VALID_CATEGORIES);
         }
     }
-
+    @Override
+    public boolean isMutating() {
+        return true;
+    }
 }

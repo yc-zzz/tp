@@ -84,4 +84,9 @@ public class EditCommand extends Command {
         ui.showMessage("Edited transaction " + targetIndex + ":\n  Before: " + oldTransaction
                 + "\n  After:  " + newTransaction);
     }
+
+    @Override
+    public boolean isMutating() {
+        return true;
+    }
 }

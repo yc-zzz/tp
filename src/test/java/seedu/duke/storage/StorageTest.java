@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import seedu.duke.MoneyBagProMaxException;
+import seedu.duke.budget.Budget;
 import seedu.duke.transaction.Expense;
 import seedu.duke.transaction.Frequency;
 import seedu.duke.transaction.Income;
@@ -29,11 +30,13 @@ class StorageTest {
     
     private Storage storage;
     private TransactionList list;
+    private Budget budget;
 
     @BeforeEach
     void setUp() {
         storage = new Storage();
         list = new TransactionList();
+        budget = new Budget();
     }
 
     @AfterEach
@@ -46,7 +49,7 @@ class StorageTest {
 
     @Test
     void load_noFileExists_createsEmptyFile() throws MoneyBagProMaxException {
-        storage.load(list);
+        storage.load(list, budget);
         assertTrue(Files.exists(Paths.get(DATA_FILE)));
         assertEquals(0, list.size());
     }
@@ -55,7 +58,7 @@ class StorageTest {
     void load_emptyFile_listRemainsEmpty() throws MoneyBagProMaxException, IOException {
         Files.createDirectories(Paths.get("data"));
         Files.createFile(Paths.get(DATA_FILE));
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -63,10 +66,11 @@ class StorageTest {
     void load_validExpense_restoredCorrectly() throws MoneyBagProMaxException {
         list.add(new Expense("food", 10.0, "lunch",
                              LocalDate.of(2026, 3, 23)));
-        storage.save(list);
+        storage.save(list, budget);
 
         TransactionList loaded = new TransactionList();
-        storage.load(loaded);
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
 
         assertEquals(1, loaded.size());
         assertEquals("food", loaded.get(0).getCategory());
@@ -80,10 +84,11 @@ class StorageTest {
     void load_validIncome_restoredCorrectly() throws MoneyBagProMaxException {
         list.add(new Income("salary", 3000.0, "march pay",
                             LocalDate.of(2026, 3, 1)));
-        storage.save(list);
+        storage.save(list, budget);
 
         TransactionList loaded = new TransactionList();
-        storage.load(loaded);
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
 
         assertEquals(1, loaded.size());
         assertEquals("salary", loaded.get(0).getCategory());
@@ -99,10 +104,11 @@ class StorageTest {
                             LocalDate.of(2026, 3, 1)));
         list.add(new Expense("transport", 2.50, "bus",
                              LocalDate.of(2026, 3, 22)));
-        storage.save(list);
+        storage.save(list, budget);
 
         TransactionList loaded = new TransactionList();
-        storage.load(loaded);
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
 
         assertEquals(3, loaded.size());
     }
@@ -113,7 +119,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=INVALID | date=2026-03-23\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -123,7 +129,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=transfer | category=misc | amount=50.0 | description= | date=2026-03-23\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -133,14 +139,14 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=10.0 | date=2026-03-23\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(1, list.size());
         assertEquals("", list.get(0).getDescription());
     }
 
     @Test
     void save_emptyList_writesEmptyFile() throws MoneyBagProMaxException {
-        storage.save(list);
+        storage.save(list, budget);
         assertTrue(Files.exists(Paths.get(DATA_FILE)));
     }
 
@@ -150,13 +156,14 @@ class StorageTest {
                              LocalDate.of(2026, 3, 23)));
         list.add(new Expense("transport", 2.50, "bus",
                              LocalDate.of(2026, 3, 22)));
-        storage.save(list);
+        storage.save(list, budget);
 
         list.remove(0);
-        storage.save(list);
+        storage.save(list, budget);
 
         TransactionList loaded = new TransactionList();
-        storage.load(loaded);
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
         assertEquals(1, loaded.size());
         assertEquals("transport", loaded.get(0).getCategory());
     }
@@ -165,15 +172,16 @@ class StorageTest {
     void save_overwritesPreviousSave() throws MoneyBagProMaxException {
         list.add(new Expense("food", 10.0, "lunch",
                              LocalDate.of(2026, 3, 23)));
-        storage.save(list);
+        storage.save(list, budget);
 
         TransactionList updated = new TransactionList();
         updated.add(new Income("salary", 500.0, "allowance",
                                LocalDate.of(2026, 3, 1)));
-        storage.save(updated);
+        storage.save(updated, budget);
 
         TransactionList loaded = new TransactionList();
-        storage.load(loaded);
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
         assertEquals(1, loaded.size());
         assertEquals("income", loaded.get(0).getType());
     }
@@ -182,10 +190,11 @@ class StorageTest {
     void load_expenseWithEmptyDescription_preservedCorrectly() throws MoneyBagProMaxException {
         list.add(new Expense("misc", 5.0, "", 
                              LocalDate.of(2026, 1, 15)));
-        storage.save(list);
+        storage.save(list, budget);
 
         TransactionList loaded = new TransactionList();
-        storage.load(loaded);
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
 
         assertEquals("", loaded.get(0).getDescription());
         assertEquals(5.0, loaded.get(0).getAmount());
@@ -200,7 +209,7 @@ class StorageTest {
                                   + "[TXN] | type=expense | category=food | amount=10.0"
                                   + " | description=lunch | date=2026-03-23\n"
                                   + "some random line\n");
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(1, list.size());
     }
 
@@ -210,12 +219,13 @@ class StorageTest {
                              LocalDate.of(2026, 3, 23)));
         list.add(new Expense("transport", 2.50, "bus", 
                              LocalDate.of(2026, 3, 22)));
-        storage.save(list);
+        storage.save(list, budget);
 
         TransactionList loaded = new TransactionList();
+        Budget newBudget = new Budget();
         loaded.add(new Expense("misc", 99.0, "stale", 
                                LocalDate.of(2026, 1, 1)));
-        storage.load(loaded);
+        storage.load(loaded, newBudget);
 
         assertEquals(2, loaded.size());
     }
@@ -228,10 +238,11 @@ class StorageTest {
                             LocalDate.of(2026, 3, 1)));
         list.add(new Expense("transport", 2.50, "bus",
                              LocalDate.of(2026, 3, 22)));
-        storage.save(list);
+        storage.save(list, budget);
 
         TransactionList loaded = new TransactionList();
-        storage.load(loaded);
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
 
         assertEquals("food", loaded.get(0).getCategory());
         assertEquals("salary", loaded.get(1).getCategory());
@@ -317,7 +328,7 @@ class StorageTest {
 
         list.add(new Expense("food", 10.0, "lunch",
                              LocalDate.of(2026, 3, 23)));
-        storage.save(list);
+        storage.save(list, budget);
 
         assertTrue(Files.exists(Paths.get(DATA_FILE)));
     }
@@ -329,7 +340,7 @@ class StorageTest {
                           "[TXN] | type=expense | category=food | amount=-10.0"
                                   + " | description=lunch | date=2026-03-23\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -339,7 +350,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=0.0 | description=lunch | date=2026-03-23\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -349,7 +360,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=10.0 | description=lunch | date=23-03-2026\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -359,7 +370,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | description=lunch | date=2026-03-23\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -369,7 +380,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | category=food | amount=10.0 | description=lunch\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -379,7 +390,7 @@ class StorageTest {
         Files.writeString(Paths.get(DATA_FILE),
                           "[TXN] | type=expense | amount=10.0 | description=lunch | date=2026-03-23\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(0, list.size());
     }
 
@@ -394,9 +405,27 @@ class StorageTest {
                                   + "[TXN] | type=income | category=salary | amount=3000.0"
                                   + " | description=pay | date=2026-03-01\n");
 
-        storage.load(list);
+        storage.load(list, budget);
         assertEquals(2, list.size());
         assertEquals("food", list.get(0).getCategory());
         assertEquals("salary", list.get(1).getCategory());
+    }
+
+    @Test
+    void saveAndLoad_budgetPersists() throws Exception {
+        Storage storage = new Storage();
+        TransactionList list = new TransactionList();
+        Budget budget = new Budget();
+
+        budget.setMonthlyBudget(500);
+        storage.save(list, budget);
+
+        // simulate restart
+        TransactionList loadedList = new TransactionList();
+        Budget loadedBudget = new Budget();
+
+        storage.load(loadedList, loadedBudget);
+
+        assertEquals(500, loadedBudget.getMonthlyBudget());
     }
 }
