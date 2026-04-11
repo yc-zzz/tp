@@ -389,9 +389,9 @@ public class Parser {
         String type = null;
         String month = null;
 
-        if (arguments.startsWith("month/")) {
+        if (arguments.contains("month/")) {
             int monthIndex = arguments.indexOf("month/");
-            String datePart = arguments.substring(monthIndex + "month/".length()).trim();
+            String datePart = arguments.substring(monthIndex + "month/".length()).trim().split(" ")[0];
             // we have basic validation for YYYY-MM format
             if (!datePart.matches("\\d{4}-\\d{2}")) {
                 throw new MoneyBagProMaxException("Invalid date format. Use: summary month/YYYY-MM (e.g., 2026-04)");
