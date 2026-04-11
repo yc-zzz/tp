@@ -88,13 +88,6 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void execute_emptyList_throwsException() {
-        DeleteCommand command = new DeleteCommand(1, undoRedoManager);
-
-        assertThrows(MoneyBagProMaxException.class, () -> command.execute(list, budget, ui));
-    }
-
-    @Test
     void execute_emptyList_throwsEmptyListMessage() {
         DeleteCommand command = new DeleteCommand(1, undoRedoManager);
 
