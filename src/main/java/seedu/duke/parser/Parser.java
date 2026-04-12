@@ -147,7 +147,10 @@ public class Parser {
                     && !CategoryManager.getInstance().isValidExpenseCategory(category)) {
                 throw new MoneyBagProMaxException("Invalid category '" + category + "'.");
             }
-            if (remainder.contains(" rec/")) {
+            String remainderForRecCheck = remainder.contains(" desc/")
+                    ? remainder.substring(0, remainder.indexOf(" desc/"))
+                    : remainder;
+            if (remainderForRecCheck.contains(" rec/")) {
                 Frequency frequency = parseFrequency(remainder);
                 String cleanRemainder = remainder.replaceFirst(" rec/\\S+", "").trim();
                 double amount = parseAmount(cleanRemainder);
@@ -237,10 +240,11 @@ public class Parser {
     /**
      * Extracts the date from the add command remainder string.
      * Returns today's date if the d/ token is absent.
-     * Shows an error message and returns today's date if the format is invalid.
+     * Throws MoneyBagProMaxException if the format is invalid — the transaction is rejected.
      *
      * @param remainder The portion of input after the first slash.
-     * @return The parsed LocalDate, or LocalDate.now() if absent or invalid.
+     * @return The parsed LocalDate, or LocalDate.now() if the d/ token is absent.
+     * @throws MoneyBagProMaxException if a d/ token is present but has an invalid date format.
      */
     private LocalDate parseDate(String remainder) throws MoneyBagProMaxException {
         if (!remainder.contains(" d/")) {
