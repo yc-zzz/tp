@@ -4,6 +4,7 @@ import seedu.duke.MoneyBagProMaxException;
 import seedu.duke.budget.Budget;
 import seedu.duke.category.CategoryManager;
 import seedu.duke.transaction.Expense;
+import seedu.duke.transaction.Income;
 import seedu.duke.transaction.Transaction;
 import seedu.duke.transactionlist.TransactionList;
 import seedu.duke.ui.Ui;
@@ -51,12 +52,14 @@ public class SummaryCommand extends Command {
         boolean isCategorySummary = isCategoryType(summaryType);
         if (isCategorySummary) {
             CategoryManager cm = CategoryManager.getInstance();
-            boolean isBuiltIn = Expense.VALID_CATEGORIES.stream()
+            boolean isBuiltInExpense = Expense.VALID_CATEGORIES.stream()
+                    .anyMatch(c -> c.equalsIgnoreCase(summaryType));
+            boolean isBuiltInIncome = Income.VALID_CATEGORIES.stream()
                     .anyMatch(c -> c.equalsIgnoreCase(summaryType));
             boolean isCustom = cm.getAllExpenseCategories().stream()
                     .anyMatch(c -> c.equalsIgnoreCase(summaryType));
 
-            if (!isBuiltIn && !isCustom) {
+            if (!isBuiltInExpense && !isBuiltInIncome && !isCustom) {
                 ui.showMessage("Category '" + summaryType + "' not found.");
                 return;
             }
