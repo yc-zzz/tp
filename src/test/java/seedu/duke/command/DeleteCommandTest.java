@@ -98,4 +98,10 @@ public class DeleteCommandTest {
 
         assertTrue(exception.getMessage().contains("There are no entries in the list to delete"));
     }
+
+    @Test
+    public void isMutating_deleteCommand_returnsTrue() {
+        DeleteCommand command = new DeleteCommand(1, undoRedoManager);
+        assertTrue(command.isMutating());
+    }
 }

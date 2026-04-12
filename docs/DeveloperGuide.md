@@ -73,6 +73,20 @@ Commands that modify data (e.g. `AddCommand`, `DeleteCommand`, `EditCommand`) ov
 `isMutatingRecurring()` to return `true`. Read-only commands (e.g. `ListCommand`,
 `SortCommand`, `FilterCommand`) inherit all three defaults and do not trigger any saves.
 
+Every concrete command extends `Command` and overrides only the methods relevant to it.
+Commands that modify data (e.g. `AddCommand`, `DeleteCommand`, `EditCommand`) override
+`isMutating()` to return `true`. Commands that modify recurring templates (e.g.
+`AddRecurringCommand`, `DeleteRecurringCommand`, `GenerateRecurringCommand`) override
+`isMutatingRecurring()` to return `true`. Read-only commands (e.g. `ListCommand`,
+`SortCommand`, `FilterCommand`) inherit all three defaults and do not trigger any saves.
+
+> ⚠️ **Important for contributors:** Any new command that modifies `TransactionList` **must**
+> override `isMutating()` to return `true`. Failing to do so will cause the main loop to skip
+> `Storage.save()` after execution, meaning changes will not be persisted to disk and will be
+> lost when the application exits. This was identified as a bug in v2.0 where `AddCommand` and
+> `EditCommand` were missing this override. A final save is also triggered on exit as a safety
+> net, but correct `isMutating()` implementation remains required for mid-session persistence.
+
 ### Ui
 The `Ui` component handles all terminal input and output. It wraps a `Scanner` for reading
 lines and exposes dedicated methods that the rest of the application calls, so no other

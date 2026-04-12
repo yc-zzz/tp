@@ -52,8 +52,11 @@ public class AddCommand extends Command {
                     + " Valid income categories: " + Income.VALID_CATEGORIES);
         }
     }
+
+    /** @return boolean — always true, this command modifies the transaction list. */
     @Override
     public boolean isMutating() {
         return true;
     }
+
 }

@@ -400,16 +400,31 @@ public class Parser {
             return new SummaryCommand("all");
         }
 
-        if (arguments.startsWith("month/")) {
-            String datePart = arguments.replace("month/", "").trim();
+        String type = null;
+        String month = null;
+
+        if (arguments.contains("month/")) {
+            int monthIndex = arguments.indexOf("month/");
+            String datePart = arguments.substring(monthIndex + "month/".length()).trim().split(" ")[0];
             // we have basic validation for YYYY-MM format
             if (!datePart.matches("\\d{4}-\\d{2}")) {
                 throw new MoneyBagProMaxException("Invalid date format. Use: summary month/YYYY-MM (e.g., 2026-04)");
             }
-            // we use "month" as the type to tell the command to filter by the provided date
-            return new SummaryCommand("month", datePart);
+            month = datePart;
+
+            String beforeMonth = arguments.substring(0, monthIndex).trim();
+            if (!beforeMonth.isEmpty()) {
+                type = beforeMonth.toLowerCase();
+            }
+        } else {
+            // no month token
+            type = arguments.trim().toLowerCase();
         }
-        return new SummaryCommand(arguments);
+
+        if (type == null || type.isEmpty()) {
+            type = "all";
+        }
+        return new SummaryCommand(type, month);
     }
 
     private Command parseCategoryCommand(String args) throws MoneyBagProMaxException {

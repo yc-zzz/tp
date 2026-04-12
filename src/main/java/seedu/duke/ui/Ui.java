@@ -47,10 +47,10 @@ public class Ui {
                                    in their category, description or date.
                                  - Example: find lunch
                                  - Example: find 2026-03
-                5. Summary     : `summary [category]`
-                                 - Shows overall totals or specific category totals.
-                                 - Valid types: `all`, `expense`, `income`, or specific categories.
-                                 - Example: summary all
+                5. Summary     : `summary [category] [month/YYYY-MM]`
+                                 - Shows overall totals or specific category totals or by month totals
+                                 - Valid types: `all`, `expense`, `income`, or specific valid categories.
+                                 - Example: summary education month/2026-04
                 6. Sort        : `sort by/[CRITERIA]`
                                  - Sorts and displays transactions by the given criteria.
                                  - Valid criteria: `date`, `amount`, `category`
@@ -90,7 +90,7 @@ public class Ui {
                                  - Example: delete-rec 2
                 16. Generate   : `gen-rec`
                                  - Generates all due recurring transactions up to today.
-                17. Filter     : `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`
+                17. Filter     : `filter from/YYYY-MM-DD to/YYYY-MM-DD`
                                  - Filters your transactions based on the time frame given
                 18. Category   : `category add/NAME` or `category remove/NAME` or `category list`
                                  - Manages custom expense categories.
@@ -104,7 +104,9 @@ public class Ui {
                 20. Export Data: `export-data FILEPATH`
                                  - Copies the internal data file to a specified location.
                                  - Example: export-data ~/backup/transactions.txt
-                21. Exit       : `exit`
+                21. Help       : `help`
+                                 - Generates the help message into the terminal
+                22. Exit       : `exit`
                                  - Exits the program.
                 %s""".formatted(separator, separator, separator);
 

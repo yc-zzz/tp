@@ -62,6 +62,10 @@ public class MoneyBagProMax {
                     storage.saveRecurring(recurringList);
                 }
                 isExit = command.isExit();
+                if (isExit) {
+                    storage.save(list, budget);
+                    storage.saveRecurring(recurringList);
+                }
             } catch (MoneyBagProMaxException e) {
                 ui.showMessage(e.getMessage());
             } catch (Exception e) {
