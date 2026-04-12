@@ -15,6 +15,7 @@ import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EditCommandTest {
 
@@ -71,5 +72,12 @@ class EditCommandTest {
     void execute_outOfBoundsIndex_throwsException() {
         assertThrows(MoneyBagProMaxException.class,
                 () -> new EditCommand(99, "food", 10.00, "", testDate, undoRedoManager).execute(list, budget, ui));
+    }
+
+    @Test
+    public void isMutating_editCommand_returnsTrue() {
+        EditCommand command = new EditCommand(1, "food", 10.0, "lunch",
+                                              testDate, undoRedoManager);
+        assertTrue(command.isMutating());
     }
 }

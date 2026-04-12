@@ -17,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class AddCommandTest {
 
@@ -76,5 +77,12 @@ class AddCommandTest {
         assertEquals(0, list.size());
         String output = outContent.toString();
         assert output.contains("Invalid category 'invalid'");
+    }
+
+    @Test
+    public void isMutating_addCommand_returnsTrue() {
+        AddCommand command = new AddCommand("food", 10.0, "lunch",
+                                            LocalDate.of(2026, 3, 18), new UndoRedoManager());
+        assertTrue(command.isMutating());
     }
 }
