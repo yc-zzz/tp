@@ -394,8 +394,11 @@ Exits the MoneyBagProMax application.
 
 **Q**: How do I transfer my data to another computer?
 
-**A**: Install the MoneyBagProMax application on the new computer and run it once to generate the default data file.
-Then, overwrite the generated data/transactions.txt file with the one from your previous computer to transfer all your information.
+**A**: Install the MoneyBagProMax application on the new computer and run it once to generate the default data files.
+Then, copy all three data files from your previous computer into the `data/` folder on the new one, overwriting the generated files:
+- `data/transactions.txt` — your recorded income and expense entries
+- `data/categories.txt` — your custom expense categories
+- `data/recurring.txt` — your recurring transaction templates
 
 ---
 
