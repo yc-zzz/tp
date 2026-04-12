@@ -20,6 +20,9 @@ public class DeleteRecurringCommand extends Command {
 
     @Override
     public void execute(TransactionList list, Budget budget, Ui ui) throws MoneyBagProMaxException {
+        if (recurringList.isEmpty()) {
+            throw new MoneyBagProMaxException("No recurring transactions to delete.");
+        }
         int listIndex = targetIndex - 1;
         if (listIndex < 0 || listIndex >= recurringList.size()) {
             throw new MoneyBagProMaxException(
