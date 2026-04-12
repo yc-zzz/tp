@@ -14,10 +14,21 @@ import java.time.LocalDate;
 public class GenerateRecurringCommand extends Command {
 
     private final RecurringTransactionList recurringList;
+    private final boolean showEmptyMessage;
 
+    /** User-invoked constructor — prints status messages when nothing is generated. */
     public GenerateRecurringCommand(RecurringTransactionList recurringList) {
+        this(recurringList, true);
+    }
+
+    /**
+     * @param showEmptyMessage false when called at startup to suppress noise;
+     *                         true when the user explicitly runs gen-rec.
+     */
+    public GenerateRecurringCommand(RecurringTransactionList recurringList, boolean showEmptyMessage) {
         assert recurringList != null : "RecurringTransactionList should not be null";
         this.recurringList = recurringList;
+        this.showEmptyMessage = showEmptyMessage;
     }
 
     @Override
@@ -48,8 +59,12 @@ public class GenerateRecurringCommand extends Command {
             }
         }
 
-        if (generatedCount == 0 && !recurringList.isEmpty()) {
-            ui.showMessage("No recurring transactions are due.");
+        if (generatedCount == 0 && showEmptyMessage) {
+            if (recurringList.isEmpty()) {
+                ui.showMessage("No recurring transactions configured.");
+            } else {
+                ui.showMessage("No recurring transactions are due.");
+            }
         }
     }
 

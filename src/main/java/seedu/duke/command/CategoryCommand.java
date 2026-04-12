@@ -3,6 +3,7 @@ package seedu.duke.command;
 import seedu.duke.budget.Budget;
 import seedu.duke.category.CategoryManager;
 import seedu.duke.transaction.Expense;
+import seedu.duke.transactionlist.RecurringTransactionList;
 import seedu.duke.transactionlist.TransactionList;
 import seedu.duke.ui.Ui;
 import seedu.duke.transaction.Income;
@@ -15,19 +16,23 @@ import seedu.duke.transaction.Income;
  */
 public class CategoryCommand extends Command {
 
-    private final String action; 
+    private final String action;
     private final String name;
+    private final RecurringTransactionList recurringList;
 
     /**
      * Constructor for category command
      * @param action add remove or list
      * @param name name of the category provided, or empty string if category is list
+     * @param recurringList the recurring transaction list to check during category removal
      */
-    public CategoryCommand(String action, String name) {
+    public CategoryCommand(String action, String name, RecurringTransactionList recurringList) {
         assert action != null : "Action must not be null";
         assert name != null : "Name must not be null";
+        assert recurringList != null : "RecurringTransactionList must not be null";
         this.action = action;
         this.name = name;
+        this.recurringList = recurringList;
     }
 
     /**
@@ -60,8 +65,17 @@ public class CategoryCommand extends Command {
                         break;
                     }
                 }
+                if (!inUse) {
+                    for (int i = 0; i < recurringList.size(); i++) {
+                        if (recurringList.get(i).getCategory().equalsIgnoreCase(name)) {
+                            inUse = true;
+                            break;
+                        }
+                    }
+                }
                 if (inUse) {
-                    ui.showMessage("Cannot remove '" + name + "': it is used by existing transactions.");
+                    ui.showMessage("Cannot remove '" + name + "': it is used by existing transactions"
+                            + " or recurring templates.");
                 } else if (cm.removeCustomCategory(name)) {
                     ui.showMessage("Custom category removed: " + name);
                 } else {

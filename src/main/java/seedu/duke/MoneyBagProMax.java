@@ -41,7 +41,7 @@ public class MoneyBagProMax {
         logger.info("Core components: TransactionList, Parser, UndoRedoManager and Ui initialised successfully.");
         ui.showWelcomeMessage();
         try {
-            new GenerateRecurringCommand(recurringList).execute(list, budget, ui);
+            new GenerateRecurringCommand(recurringList, false).execute(list, budget, ui);
             storage.saveRecurring(recurringList);
             storage.save(list, budget);
         } catch (MoneyBagProMaxException e) {
