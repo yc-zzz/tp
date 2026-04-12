@@ -151,20 +151,26 @@ public class Parser {
                 Frequency frequency = parseFrequency(remainder);
                 String cleanRemainder = remainder.replaceFirst(" rec/\\S+", "").trim();
                 double amount = parseAmount(cleanRemainder);
+                if (amount < 0.01 || !Double.isFinite(amount) || amount > 10000000) {
+                    throw new MoneyBagProMaxException("Amount must be between $0.01 and $10,000,000.");
+                }
                 String description = parseDescription(cleanRemainder);
+                if (cleanRemainder.contains(" desc/") && description.isEmpty()) {
+                    throw new MoneyBagProMaxException("Description cannot be empty when 'desc/' is provided.");
+                }
                 LocalDate date = parseDate(cleanRemainder);
                 return new AddRecurringCommand(category, amount, description, frequency, date, recurringList);
             }
 
             double amount = parseAmount(remainder);
+            if (amount < 0.01 || !Double.isFinite(amount) || amount > 10000000) {
+                throw new MoneyBagProMaxException("Amount must be between $0.01 and $10,000,000.");
+            }
             String description = parseDescription(remainder);
             if (remainder.contains(" desc/") && description.isEmpty()) {
                 throw new MoneyBagProMaxException("Description cannot be empty when 'desc/' is provided.");
             }
             LocalDate date = parseDate(remainder);
-            if (amount < 0.01 || !Double.isFinite(amount) || amount > 10000000) {
-                throw new MoneyBagProMaxException("Amount must be between $0.01 and $10,000,000.");
-            }
             assert !date.isBefore(LocalDate.of(1900, 1, 1)) :
                     "Parsed date is before year 1900, likely a typo: " + date;
 
@@ -312,6 +318,11 @@ public class Parser {
         }
 
         String remainder = parts[1].trim();
+        if (remainder.startsWith("desc/") || remainder.startsWith("d/")) {
+            throw new MoneyBagProMaxException(
+                    "Invalid format — category/PRICE must come first. "
+                            + "Try: edit INDEX [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]");
+        }
         String[] categoryAndRest = remainder.split("/", 2);
         if (categoryAndRest.length < 2) {
             throw new MoneyBagProMaxException(
@@ -326,7 +337,7 @@ public class Parser {
                 throw new MoneyBagProMaxException("Invalid category '" + category + "'.");
             }
             double amount = parseAmount(valueRemainder);
-            if (amount < 0.01 || !Double.isFinite(amount) || amount>10000000) {
+            if (amount < 0.01 || !Double.isFinite(amount) || amount > 10000000) {
                 throw new MoneyBagProMaxException("Amount must be between $0.01 and $10,000,000.");
             }
             String description = parseDescription(valueRemainder);
