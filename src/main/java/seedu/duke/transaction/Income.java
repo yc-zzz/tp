@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 public class Income extends Transaction {
 
     public static final List<String> VALID_CATEGORIES = List.of(
-            "salary", "freelance", "investment", "business", "gift", "misc"
+            "salary", "freelance", "investment", "business", "gift"
     );
 
     private static final Logger logger = Logger.getLogger(Income.class.getName());

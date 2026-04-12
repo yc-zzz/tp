@@ -47,10 +47,10 @@ public class Ui {
                                    in their category, description or date.
                                  - Example: find lunch
                                  - Example: find 2026-03
-                5. Summary     : `summary [category]`
-                                 - Shows overall totals or specific category totals.
-                                 - Valid types: `all`, `expense`, `income`, or specific categories.
-                                 - Example: summary all
+                5. Summary     : `summary [category] [month/YYYY-MM]`
+                                 - Shows overall totals or specific category totals or by month totals
+                                 - Valid types: `all`, `expense`, `income`, or specific valid categories.
+                                 - Example: summary education month/2026-04
                 6. Sort        : `sort by/[CRITERIA]`
                                  - Sorts and displays transactions by the given criteria.
                                  - Valid criteria: `date`, `amount`, `category`
@@ -61,9 +61,9 @@ public class Ui {
                 8. Edit        : `edit [INDEX] [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`
                                  - Replaces a transaction at INDEX with the new values.
                                  - Same category/price/desc/date format as `add`.
-                                 - Example: edit 3 food/20 desc/dinner d/2026-03-20                 
+                                 - Example: edit 3 food/20 desc/dinner d/2026-03-20
                 9. Undo        : `undo`
-                                 - Reverses the last add or delete action.
+                                 - Reverses the last add, delete, or edit action.
                 10. Redo        : `redo`
                                  - Re-applies the last undone action.
                 11. Budget     : `budget set [AMOUNT]` or `budget status`
@@ -90,9 +90,23 @@ public class Ui {
                                  - Example: delete-rec 2
                 16. Generate   : `gen-rec`
                                  - Generates all due recurring transactions up to today.
-                17. Filter     : `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`
+                17. Filter     : `filter from/YYYY-MM-DD to/YYYY-MM-DD`
                                  - Filters your transactions based on the time frame given
-                18. Exit       : `exit`
+                18. Category   : `category add/NAME` or `category remove/NAME` or `category list`
+                                 - Manages custom expense categories.
+                                 - `category add/NAME` adds a new custom category.
+                                 - `category remove/NAME` removes a custom category.
+                                 - `category list` lists all available categories.
+                                 - Example: category add/groceries
+                19. Export CSV : `export-csv FILEPATH`
+                                 - Exports all transactions to a .csv file.
+                                 - Example: export-csv ~/transactions.csv
+                20. Export Data: `export-data FILEPATH`
+                                 - Copies the internal data file to a specified location.
+                                 - Example: export-data ~/backup/transactions.txt
+                21. Help       : `help`
+                                 - Generates the help message into the terminal
+                22. Exit       : `exit`
                                  - Exits the program.
                 %s""".formatted(separator, separator, separator);
 
@@ -164,16 +178,16 @@ public class Ui {
     public static void printWelcomeBanner() {
         System.out.print(ANSI_BRIGHT_GREEN);
         System.out.print("""
-                    .___.        
-                   /     \\       
-                  |       |      
-                  `-.   .-`      
-                 /   \\ /   \\     
-                |   $$$$$   |    
-                |  $$$$$$$  |    
-                |   $$$$$   |    
-                 \\         /     
-                  `-------`      
+                    .___.
+                   /     \\
+                  |       |
+                  `-.   .-`
+                 /   \\ /   \\
+                |   $$$$$   |
+                |  $$$$$$$  |
+                |   $$$$$   |
+                 \\         /
+                  `-------`
             """);
         System.out.print(ANSI_RESET);
     }

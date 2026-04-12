@@ -24,6 +24,10 @@ public class DeleteCommand extends Command {
 
         int listIndex = targetIndex - 1;
 
+        if (list.isEmpty()) {
+            throw new MoneyBagProMaxException("There are no entries in the list to delete.");
+        }
+
         if (listIndex < 0 || listIndex >= list.size()) {
             throw new MoneyBagProMaxException("Invalid transaction index. " +
                     "Please provide a number between 1 and " + list.size() + ".");

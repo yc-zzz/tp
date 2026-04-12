@@ -40,7 +40,7 @@ respective system [here](https://www.oracle.com/java/technologies/javase/jdk17-a
 
 1. Download the latest MoneyBagProMax JAR file from the **GitHub Releases Page**.
 2. Copy the JAR file into the folder that you want to use as the home folder for the application.
-3. Locate your JAR file and copy the filepath. Example: `/Users/{yourName}/Desktop/downloads/expense-tracker.jar`
+3. Locate your JAR file and copy the filepath. Example: `/Users/{yourName}/Desktop/downloads/MoneyBagProMax.jar`
 4. Open the command line terminal:
     - *Windows*: Open Command Prompt
     - *macOS/Linux*: Open Terminal
@@ -79,19 +79,25 @@ Adds an expense by the given category, amount, optional description and optional
 > [!NOTE]
 > If the date is omitted, it defaults to today's date. If the description is omitted, the transaction is recorded without one.
 
+> [!NOTE]
+> The expense category input is case-insensitive.
+
 ---
 
 ### Adding an Income: `add [income-category]`
 Adds an income transaction to your list.
 
 **Format**: `add [income-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`
-**Valid income categories**: `salary`, `freelance`, `investment`, `business`, `gift`, `misc`
+**Valid income categories**: `salary`, `freelance`, `investment`, `business`, `gift`
 
 **Examples**:
 - `add salary/500 desc/allowance d/2026-03-01` Adds a salary income of $500.00 described as *"allowance"* on 1st March 2026.
 - `add freelance/150` Adds a freelance income of $150.00 with today's date and no description.
 
 > [!NOTE] If the date is omitted, it defaults to today's date. If the description is omitted, the transaction is recorded without one.
+
+> [!NOTE]
+> The income category input is case-insensitive.
 
 ---
 
@@ -124,7 +130,7 @@ Searches for transactions that contain a specific keyword in their category, des
 ### Viewing a Summary: `summary`
 Displays overall totals or specific category totals for your transactions.
 
-**Format**: `summary [TYPE]`
+**Format**: `summary [TYPE] [month/YYYY-MM]`
 
 **Valid types**: `all`, `expense`, `income`, or any specific category (e.g. `food`, `salary`)
 
@@ -132,7 +138,11 @@ Displays overall totals or specific category totals for your transactions.
 - `summary all` Shows the total income, total expenses, and net balance.
 - `summary expense` Shows the total amount spent across all expense categories.
 - `summary food` Shows the total amount spent specifically on food.
+- `summary month/2026-03` Shows the total income, expenses, and net balance for that particular month.
+- `summary food month/2026-04` Shows you the total expense for 2026-04.
 
+> [!NOTE]
+> The input category is case-insensitive.
 ---
 
 ### Sorting Transactions: `sort`
@@ -327,7 +337,7 @@ Generates all pending transaction entries for every recurring template, up to to
 ### Filtering Transactions: `filter`
 Filters and displays only the transactions that fall within a specified date range.
 
-**Format**: `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`
+**Format**: `filter from/YYYY-MM-DD to/YYYY-MM-DD`
 
 **Examples**:
 - `filter from/2026-01-01 to/2026-03-31` Displays all transactions from 1st January 2026 to 31st March 2026.
@@ -387,7 +397,7 @@ Then, overwrite the generated data/transactions.txt file with the one from your 
 
 ## Editing the Data File
 
-MoneyBagProMax automatically saves your transaction data in two text files, both located in the `./data/` directory relative to where you run the program:
+MoneyBagProMax automatically saves your transaction data in three text files, both located in the `./data/` directory relative to where you run the program:
 - `transactions.txt` — stores all recorded income and expense entries.
 - `categories.txt` — stores your custom expense categories (created with `category add/NAME`).
 - `recurring.txt` — stores your recurring transaction templates (created with `add ... rec/FREQUENCY`).
@@ -404,7 +414,7 @@ MoneyBagProMax automatically saves your transaction data in two text files, both
 | **Add Income**         | `add [income-category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`        | `add salary/500 desc/allowance d/2026-03-01` |
 | **List**               | `list`                                                                 | —                                            |
 | **Find**               | `find KEYWORD`                                                         | `find lunch`                                 |
-| **Summary**            | `summary [TYPE]`                                                       | `summary all`                                |
+| **Summary**            | `summary [TYPE] [month/YYYY-MM]`                                       | `summary all`                                |
 | **Sort**               | `sort by/CRITERIA`                                                     | `sort by/date`                               |
 | **Delete**             | `delete ENTRY_INDEX`                                                   | `delete 3`                                   |
 | **Edit**               | `edit INDEX [category]/PRICE [desc/DESCRIPTION] [d/YYYY-MM-DD]`        | `edit 3 food/20 desc/dinner d/2026-03-20`    |
@@ -420,7 +430,7 @@ MoneyBagProMax automatically saves your transaction data in two text files, both
 | **List Recurring**     | `list-rec`                                                             | —                                            |
 | **Delete Recurring**   | `delete-rec INDEX`                                                     | `delete-rec 2`                               |
 | **Generate Recurring** | `gen-rec`                                                              | —                                            |
-| **Filter**             | `filter [from/YYYY-MM-DD] [to/YYYY-MM-DD]`                             | `filter from/2026-01-01 to/2026-03-31`       |
+| **Filter**             | `filter from/YYYY-MM-DD to/YYYY-MM-DD`                                 | `filter from/2026-01-01 to/2026-03-31`       |
 | **Export CSV**         | `export-csv FILEPATH`                                                  | `export-csv ~/transactions.csv`              |
 | **Export Data**        | `export-data FILEPATH`                                                 | `export-data ~/backup/transactions.txt`      |
 | **Exit**               | `exit`                                                                 | —                                            |

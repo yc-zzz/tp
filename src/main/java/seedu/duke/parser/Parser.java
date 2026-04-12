@@ -26,6 +26,8 @@ import seedu.duke.command.StatsCommand;
 import seedu.duke.transaction.Frequency;
 import seedu.duke.transactionlist.RecurringTransactionList;
 import seedu.duke.undoredo.UndoRedoManager;
+import seedu.duke.transaction.Income;
+import seedu.duke.category.CategoryManager;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -51,7 +53,7 @@ public class Parser {
         if (input == null || input.trim().isEmpty()) {
             throw new MoneyBagProMaxException("Please enter a command.");
         }
-
+        input = input.trim().replaceAll(" +", " ");
         String[] parts = input.split(" ", 2);
         assert parts.length >= 1 && parts.length <= 2 : "split produced unexpected part count: " + parts.length;
         String command = parts[0].toLowerCase();
@@ -84,8 +86,14 @@ public class Parser {
         case "sort":
             return parseSortCommand(arguments);
         case "undo":
+            if (!arguments.isEmpty()) {
+                throw new MoneyBagProMaxException("undo does not take any arguments.");
+            }
             return new UndoCommand(undoRedoManager);
         case "redo":
+            if (!arguments.isEmpty()) {
+                throw new MoneyBagProMaxException("redo does not take any arguments.");
+            }
             return new RedoCommand(undoRedoManager);
         case "edit":
             return parseEditCommand(arguments);
@@ -130,7 +138,10 @@ public class Parser {
 
             assert !category.isEmpty() : "Category is blank after trimming in input: " + args;
             assert !remainder.isEmpty() : "Remainder after category slash is empty in input: " + args;
-
+            if (!Income.VALID_CATEGORIES.contains(category.toLowerCase())
+                    && !CategoryManager.getInstance().isValidExpenseCategory(category)) {
+                throw new MoneyBagProMaxException("Invalid category '" + category + "'.");
+            }
             if (remainder.contains(" rec/")) {
                 Frequency frequency = parseFrequency(remainder);
                 String cleanRemainder = remainder.replaceFirst(" rec/\\S+", "").trim();
@@ -143,10 +154,9 @@ public class Parser {
             double amount = parseAmount(remainder);
             String description = parseDescription(remainder);
             LocalDate date = parseDate(remainder);
-            if (amount <= 0) {
-                throw new MoneyBagProMaxException("Amount must be positive.");
+            if (amount < 0.01 || !Double.isFinite(amount)) {
+                throw new MoneyBagProMaxException("Amount must be a valid positive number.");
             }
-            assert Double.isFinite(amount) : "Parsed amount is infinite or NaN: " + amount;
             assert !date.isBefore(LocalDate.of(1900, 1, 1)) :
                     "Parsed date is before year 1900, likely a typo: " + date;
 
@@ -202,11 +212,11 @@ public class Parser {
         String amountToken = remainder;
         if (amountToken.contains(" desc/")) {
             amountToken = amountToken.substring(0, amountToken.indexOf(" desc/"));
-        } else if (amountToken.contains(" d/")) {
+        }
+        if (amountToken.contains(" d/")) {   // was: else if
             amountToken = amountToken.substring(0, amountToken.indexOf(" d/"));
         }
-        assert !amountToken.trim().isEmpty() : "Amount token is empty after stripping flags from: " + remainder;
-
+        assert !amountToken.trim().isEmpty() : "Amount token is empty: " + remainder;
         return Double.parseDouble(amountToken.trim());
     }
 
@@ -265,8 +275,8 @@ public class Parser {
             }
             try {
                 double amount = Double.parseDouble(parts[1].trim());
-                if (amount < 0) {
-                    throw new MoneyBagProMaxException("Budget cannot be negative.");
+                if (amount <= 0) {
+                    throw new MoneyBagProMaxException("Budget must be greater than 0.");
                 }
                 return new BudgetCommand("set", amount);
             } catch (NumberFormatException e) {
@@ -303,8 +313,12 @@ public class Parser {
         try {
             String category = categoryAndRest[0].trim();
             String valueRemainder = categoryAndRest[1].trim();
+            if (!Income.VALID_CATEGORIES.contains(category.toLowerCase())
+                    && !CategoryManager.getInstance().isValidExpenseCategory(category)) {
+                throw new MoneyBagProMaxException("Invalid category '" + category + "'.");
+            }
             double amount = parseAmount(valueRemainder);
-            if (amount <= 0) {
+            if (amount < 0.01 || !Double.isFinite(amount)) {
                 throw new MoneyBagProMaxException("Amount must be positive.");
             }
             String description = parseDescription(valueRemainder);
@@ -386,16 +400,31 @@ public class Parser {
             return new SummaryCommand("all");
         }
 
-        if (arguments.startsWith("month/")) {
-            String datePart = arguments.replace("month/", "").trim();
+        String type = null;
+        String month = null;
+
+        if (arguments.contains("month/")) {
+            int monthIndex = arguments.indexOf("month/");
+            String datePart = arguments.substring(monthIndex + "month/".length()).trim().split(" ")[0];
             // we have basic validation for YYYY-MM format
             if (!datePart.matches("\\d{4}-\\d{2}")) {
                 throw new MoneyBagProMaxException("Invalid date format. Use: summary month/YYYY-MM (e.g., 2026-04)");
             }
-            // we use "month" as the type to tell the command to filter by the provided date
-            return new SummaryCommand("month", datePart);
+            month = datePart;
+
+            String beforeMonth = arguments.substring(0, monthIndex).trim();
+            if (!beforeMonth.isEmpty()) {
+                type = beforeMonth.toLowerCase();
+            }
+        } else {
+            // no month token
+            type = arguments.trim().toLowerCase();
         }
-        return new SummaryCommand(arguments);
+
+        if (type == null || type.isEmpty()) {
+            type = "all";
+        }
+        return new SummaryCommand(type, month);
     }
 
     private Command parseCategoryCommand(String args) throws MoneyBagProMaxException {

@@ -31,19 +31,19 @@ public class MoneyBagProMax {
         TransactionList list = new TransactionList();
         RecurringTransactionList recurringList = new RecurringTransactionList();
         Storage storage = new Storage();
+        Budget budget = new Budget();
         CategoryManager.getInstance().load();
-        storage.load(list);
+        storage.load(list, budget);
         storage.loadRecurring(recurringList);
         UndoRedoManager undoRedoManager = new UndoRedoManager();
         Parser parser = new Parser(undoRedoManager, recurringList);
         Ui ui = new Ui();
-        Budget budget = new Budget();
         logger.info("Core components: TransactionList, Parser, UndoRedoManager and Ui initialised successfully.");
         ui.showWelcomeMessage();
         try {
             new GenerateRecurringCommand(recurringList).execute(list, budget, ui);
             storage.saveRecurring(recurringList);
-            storage.save(list);
+            storage.save(list, budget);
         } catch (MoneyBagProMaxException e) {
             logger.log(Level.WARNING, "Startup recurring transaction processing failed: " + e.getMessage());
         }
@@ -56,7 +56,7 @@ public class MoneyBagProMax {
                 assert command != null : "Parser returned null command for input: " + input;
                 command.execute(list, budget, ui);
                 if (command.isMutating()) {
-                    storage.save(list);
+                    storage.save(list, budget);
                 }
                 if (command.isMutatingRecurring()) {
                     storage.saveRecurring(recurringList);

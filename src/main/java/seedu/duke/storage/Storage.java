@@ -1,6 +1,7 @@
 package seedu.duke.storage;
 
 import seedu.duke.MoneyBagProMaxException;
+import seedu.duke.budget.Budget;
 import seedu.duke.category.CategoryManager;
 import seedu.duke.transaction.Expense;
 import seedu.duke.transaction.Frequency;
@@ -47,6 +48,8 @@ public class Storage {
 
     private static final List<String> VALID_TYPES = List.of("income", "expense");
 
+    private static final String BUDGET_PREFIX = "[BUDGET]";
+
 
     /**
      * Populates the transaction list from disk. Call once on app startup.
@@ -54,14 +57,16 @@ public class Storage {
      * @param list TransactionList, required — the list to load transactions into.
      * @throws MoneyBagProMaxException if the file cannot be read.
      */
-    public void load(TransactionList list) throws MoneyBagProMaxException {
+    public void load(TransactionList list, Budget budget) throws MoneyBagProMaxException {
         assert list != null : "TransactionList should not be null";
+        assert budget != null : "Budget should not be null";
+
         try {
             if (!initialiseFile()) {
                 return;
             }
             clearList(list);
-            parseLines(list, Files.readAllLines(Paths.get(DATA_FILE)));
+            parseLines(list, budget, Files.readAllLines(Paths.get(DATA_FILE)));
         } catch (IOException e) {
             throw new MoneyBagProMaxException("Failed to load data: " + e.getMessage());
         }
@@ -97,11 +102,24 @@ public class Storage {
     /**
      * Parses each line from the file and adds valid transactions to the list.
      *
-     * @param list  TransactionList, required — the list to populate.
-     * @param lines List of raw lines read from the storage file.
+     * @param list   TransactionList, required — the list to populate.
+     * @param budget
+     * @param lines  List of raw lines read from the storage file.
      */
-    private void parseLines(TransactionList list, List<String> lines) {
+    private void parseLines(TransactionList list, Budget budget, List<String> lines) {
         for (String line : lines) {
+            if (line.startsWith(BUDGET_PREFIX)) {
+                Map<String, String> f = parseLine(line.replace(BUDGET_PREFIX, TXN_PREFIX));
+                if (f != null && f.containsKey("amount")) {
+                    try {
+                        double amount = Double.parseDouble(f.get("amount"));
+                        budget.setMonthlyBudget(amount);
+                    } catch (NumberFormatException e) {
+                        logger.warning("Invalid budget amount: " + line);
+                    }
+                }
+                continue;
+            }
             if (!line.startsWith(TXN_PREFIX)) {
                 continue;
             }
@@ -287,11 +305,14 @@ public class Storage {
      * @param list TransactionList, required — the list to save.
      * @throws MoneyBagProMaxException if the file cannot be written.
      */
-    public void save(TransactionList list) throws MoneyBagProMaxException {
+    public void save(TransactionList list, Budget budget) throws MoneyBagProMaxException {
         assert list != null : "TransactionList should not be null";
+        assert budget != null : "Budget should not be null";
         try {
             Files.createDirectories(Paths.get(DATA_DIR));
             List<String> lines = new ArrayList<>();
+
+            lines.add(BUDGET_PREFIX + FIELD_SEP + "amount" + KV_SEP + budget.getMonthlyBudget());
             for (int i = 0; i < list.size(); i++) {
                 lines.add(serializeLine(list.get(i)));
             }
