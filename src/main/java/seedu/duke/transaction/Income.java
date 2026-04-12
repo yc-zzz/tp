@@ -19,7 +19,8 @@ public class Income extends Transaction {
 
     public Income(String category, double amount, String description, LocalDate date) {
         super(category, amount, description, date);
-        assert VALID_CATEGORIES.contains(category.toLowerCase()) : "Income category must be one of: " + VALID_CATEGORIES;
+        assert VALID_CATEGORIES.contains(category.toLowerCase())
+                : "Income category must be one of: " + VALID_CATEGORIES;
         logger.log(Level.INFO, "Created Income — category: {0}, amount: {1}, description: \"{2}\", date: {3}",
                 new Object[]{category, amount, description, date});
     }
