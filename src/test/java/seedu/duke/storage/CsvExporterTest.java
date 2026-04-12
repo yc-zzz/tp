@@ -210,4 +210,71 @@ class CsvExporterTest {
         assertNotNull(returned);
         assertTrue(Files.exists(returned));
     }
+
+    @Test
+    void export_veryLargeList_writesAllRows() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        for (int i = 0; i < 1000; i++) {
+            list.add(new Expense("food", 10.0, "item" + i, LocalDate.of(2026, 3, 23)));
+        }
+        exporter.export(list, OUTPUT_FILE);
+
+        List<String> lines = Files.readAllLines(Paths.get(OUTPUT_FILE));
+        assertEquals(1001, lines.size()); // 1000 rows + header
+    }
+
+    @Test
+    void export_descriptionWithNewline_newlineReplacedWithSpace() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        list.add(new Expense("food", 10.0, "line1\nline2", LocalDate.of(2026, 3, 23)));
+        exporter.export(list, OUTPUT_FILE);
+
+        List<String> lines = Files.readAllLines(Paths.get(OUTPUT_FILE));
+        assertEquals(2, lines.size());
+        assertTrue(lines.get(1).contains("line1 line2"));
+    }
+
+    @Test
+    void export_veryLargeAmount_writesCorrectly() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        list.add(new Expense("food", Double.MAX_VALUE, "test", LocalDate.of(2026, 3, 23)));
+        exporter.export(list, OUTPUT_FILE);
+
+        List<String> lines = Files.readAllLines(Paths.get(OUTPUT_FILE));
+        assertEquals(2, lines.size());
+        assertTrue(lines.get(1).contains(String.valueOf(Double.MAX_VALUE)));
+    }
+
+    @Test
+    void export_descriptionWithCarriageReturn_handledGracefully() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        list.add(new Expense("food", 10.0, "line1\rline2", LocalDate.of(2026, 3, 23)));
+        exporter.export(list, OUTPUT_FILE);
+
+        List<String> lines = Files.readAllLines(Paths.get(OUTPUT_FILE));
+        assertEquals(2, lines.size());
+        assertTrue(lines.get(1).contains("line1 line2"));
+    }
+
+    @Test
+    void export_descriptionWithBothQuoteAndComma_escapedCorrectly() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        list.add(new Expense("food", 10.0, "rice, \"special\"", LocalDate.of(2026, 3, 23)));
+        exporter.export(list, OUTPUT_FILE);
+
+        List<String> lines = Files.readAllLines(Paths.get(OUTPUT_FILE));
+        assertEquals(2, lines.size());
+        assertTrue(lines.get(1).contains("\"rice, \"\"special\"\"\""));
+    }
+
+    @Test
+    void export_amountWithManyDecimalPlaces_writesCorrectly() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        list.add(new Expense("food", 10.123456789, "test", LocalDate.of(2026, 3, 23)));
+        exporter.export(list, OUTPUT_FILE);
+
+        List<String> lines = Files.readAllLines(Paths.get(OUTPUT_FILE));
+        assertEquals(2, lines.size());
+        assertTrue(lines.get(1).contains("10.123456789"));
+    }
 }

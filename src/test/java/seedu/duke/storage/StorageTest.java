@@ -428,4 +428,42 @@ class StorageTest {
 
         assertEquals(500, loadedBudget.getMonthlyBudget());
     }
+
+    @Test
+    void load_veryLargeTransactionList_allRestored() throws MoneyBagProMaxException {
+        for (int i = 0; i < 1000; i++) {
+            list.add(new Expense("food", 10.0, "item" + i, LocalDate.of(2026, 3, 23)));
+        }
+        storage.save(list, budget);
+
+        TransactionList loaded = new TransactionList();
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
+
+        assertEquals(1000, loaded.size());
+    }
+
+    @Test
+    void load_descriptionWithPipeCharacter_handledGracefully() throws MoneyBagProMaxException {
+        list.add(new Expense("food", 10.0, "rice | noodles", LocalDate.of(2026, 3, 23)));
+        storage.save(list, budget);
+
+        TransactionList loaded = new TransactionList();
+        Budget newBudget = new Budget();
+        storage.load(loaded, newBudget);
+
+        assertEquals(1, loaded.size());
+    }
+
+    @Test
+    void save_budgetZero_roundTripsCorrectly() throws MoneyBagProMaxException {
+        budget.setMonthlyBudget(0);
+        storage.save(list, budget);
+
+        TransactionList loaded = new TransactionList();
+        Budget loadedBudget = new Budget();
+        storage.load(loaded, loadedBudget);
+
+        assertEquals(0, loadedBudget.getMonthlyBudget());
+    }
 }

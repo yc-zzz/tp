@@ -97,4 +97,16 @@ public class IncomeTest {
 
         assertEquals(expectedOutput, outContent.toString());
     }
+
+    @Test
+    public void income_veryLargeAmount_createsSuccessfully() {
+        Income income = new Income("salary", Double.MAX_VALUE, "test", LocalDate.now());
+        assertEquals(Double.MAX_VALUE, income.getAmount());
+    }
+
+    @Test
+    public void income_uppercaseCategory_createsSuccessfully() {
+        Income income = new Income("salary", 1000.00, "test", LocalDate.now());
+        assertEquals("salary", income.getCategory());
+    }
 }

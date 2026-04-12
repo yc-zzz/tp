@@ -112,4 +112,18 @@ class TextFileExporterTest {
 
         assertEquals(original, Files.readString(Paths.get(DATA_FILE)));
     }
+
+    @Test
+    void export_veryLargeSourceFile_copiedCorrectly() throws MoneyBagProMaxException, IOException {
+        Files.createDirectories(Paths.get("data"));
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 1000; i++) {
+            sb.append("[TXN] | type=expense | category=food | amount=10.0 | description=lunch | date=2026-03-23\n");
+        }
+        Files.writeString(Paths.get(DATA_FILE), sb.toString());
+
+        exporter.export(OUTPUT_FILE);
+
+        assertEquals(1000, Files.readAllLines(Paths.get(OUTPUT_FILE)).size());
+    }
 }

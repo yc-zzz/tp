@@ -19,7 +19,7 @@ public class CsvExporter {
             lines.add("date,type,category,description,amount");
             for (int i = 0; i < list.size(); i++) {
                 Transaction t = list.get(i);
-                lines.add(String.join(",",
+                lines.add(String.join(",", 
                                       escape(t.getDate().toString()),
                                       escape(t.getType()),
                                       escape(t.getCategory()),
@@ -28,7 +28,7 @@ public class CsvExporter {
                 ));
             }
             Path path = Paths.get(outputPath);
-            Files.write(path, lines);
+            Files.writeString(path, String.join(System.lineSeparator(), lines) + System.lineSeparator());
             return path;
         } catch (IOException e) {
             throw new MoneyBagProMaxException("Failed to export CSV: " + e.getMessage());
@@ -39,7 +39,8 @@ public class CsvExporter {
         if (value == null) {
             return "";
         }
-        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+        value = value.replace("\n", " ").replace("\r", " ");
+        if (value.contains(",") || value.contains("\"")) {
             return "\"" + value.replace("\"", "\"\"") + "\"";
         }
         return value;
