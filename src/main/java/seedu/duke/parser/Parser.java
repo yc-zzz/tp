@@ -146,10 +146,7 @@ public class Parser {
                     && !CategoryManager.getInstance().isValidExpenseCategory(category)) {
                 throw new MoneyBagProMaxException("Invalid category '" + category + "'.");
             }
-            String remainderForRecCheck = remainder.contains(" desc/")
-                    ? remainder.substring(0, remainder.indexOf(" desc/"))
-                    : remainder;
-            if (remainderForRecCheck.contains(" rec/")) {
+            if (remainder.contains(" rec/")) {
                 Frequency frequency = parseFrequency(remainder);
                 String cleanRemainder = remainder.replaceFirst(" rec/\\S+", "").trim();
                 double amount = parseAmount(cleanRemainder);
