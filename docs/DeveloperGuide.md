@@ -1049,6 +1049,9 @@ Possible future enhancements include:
 - comparing statistics across months
 - presenting more detailed trend analysis
 - extending spending trend analysis to support multi-month comparisons or custom date ranges
+- refactor to use `BigDecimal` from using `double` in calculating of all transactions to be more accurate. 
+- extending spending trend to use a more complex algorithm to increase our accuracy in transaction analysis.
+- allowing users to undo generating a recurring transaction action as this is a known limitation.
 
 ---
 
