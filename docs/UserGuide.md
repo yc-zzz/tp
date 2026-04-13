@@ -262,7 +262,8 @@ The statistics include:
 - `stats` Displays the full statistics summary for all recorded transactions.
 
 > [NOTE]
-> General statistics are based on all recorded transactions, while budget usage is based on the current month's expenses.
+> General statistics are based on all overall recorded transactions over the earliest transactions to the latest,
+> while budget usage is based on the current month's expenses.
 ---
 ### Managing Custom Categories: `category`
 Allows you to create and manage your own expense categories beyond the 7 built-in ones.
