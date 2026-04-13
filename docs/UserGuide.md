@@ -127,7 +127,9 @@ Searches for transactions that contain a specific keyword in their category, des
 - `find 2026-03` Searches for all transactions from March 2026.
 
 > [NOTE]
-> If no transactions match your keyword, an empty result will be returned.
+> 1. If no transactions match your keyword, an empty result will be returned.
+> 2. In the results returned from the find command, the numbering of the items are based on the **actual** numbering 
+in the **original list index**.
 
 ---
 
