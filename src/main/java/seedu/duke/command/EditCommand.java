@@ -77,7 +77,7 @@ public class EditCommand extends Command {
 
         if (newTransaction == null) {
             ui.showMessage("Invalid category '" + category + "'."
-                    + " Valid expense categories: " + Expense.VALID_CATEGORIES
+                    + " Valid expense categories: " + CategoryManager.getInstance().getAllExpenseCategories()
                     + " Valid income categories: " + Income.VALID_CATEGORIES);
             return;
         }
