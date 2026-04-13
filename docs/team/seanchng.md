@@ -42,6 +42,7 @@ The storage component is designed to be robust — if the data file is missing, 
 - Wrote JUnit tests for `Income` (valid categories, invalid categories, formatted display) and `Storage` (save/load round-trip, missing file creation, corrupted entry handling).
 - Added cross-platform stress tests for `CsvExporter` covering embedded newlines, carriage returns, combined quote+comma escaping, and large decimal amounts.
 - Added edge case tests for `Income` covering empty description display and case-insensitive category input.
+
 ---
 
 ### Bug Fixes:
