@@ -139,7 +139,7 @@ Displays overall totals or specific category totals for your transactions.
 **Valid types**: `all`, `expense`, `income`, or any specific category (e.g. `food`, `salary`)
 
 **Examples**:
-- `summary all` Shows the total income, total expenses, and net balance.
+- `summary` or `summary all` Shows the total income, total expenses, and net balance.
 - `summary expense` Shows the total amount spent across all expense categories.
 - `summary food` Shows the total amount spent specifically on food.
 - `summary month/2026-03` Shows the total income, expenses, and net balance for that particular month.
