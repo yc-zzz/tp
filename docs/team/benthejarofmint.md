@@ -102,6 +102,10 @@ I contributed the following sections to the Developer Guide:
 
 ---
 
+### Beyond-Team Contributions
+- Reported a total of 11 bugs during the Practical Exam (Dry Run) for another team's product 
+to help them improve their product.
+
 ### Tools Used
 - Gradle for build automation
 - JUnit for unit testing
