@@ -1161,7 +1161,7 @@ The following test cases cover the main features of MoneyBagProMax. Run them in 
 1. `undo` — expect the deleted salary transaction restored.
 2. `undo` — expect the edit from step 19 reversed (food/12.50 restored).
 3. `redo` — expect the edit reapplied.
-4. `redo` — expect the delete to be reapplied.
+4. `redo` — expect the delete command to be reapplied.
 5. `redo` — expect an error indicating no further redo history.
 
 #### Summary
