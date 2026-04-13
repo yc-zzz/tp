@@ -98,7 +98,6 @@ addition that multiple features depend on.
 ---
 
 ### Contributions to Team-Based Tasks
-- Set up the About Us page (`jason-AboutUs` branch).
 - Reviewed teammates' pull requests and left inline comments
   ([#84](https://github.com/AY2526S2-CS2113-T14-4/tp/pull/84),
   [#85](https://github.com/AY2526S2-CS2113-T14-4/tp/pull/85),
