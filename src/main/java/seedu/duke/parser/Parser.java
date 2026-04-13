@@ -62,7 +62,6 @@ public class Parser {
 
         switch (command) {
         case "exit":
-        case "q":
             return new ExitCommand();
         case "help":
             return new HelpCommand();
