@@ -452,6 +452,11 @@ public class Parser {
             type = arguments.trim().toLowerCase();
         }
 
+        if (type != null && month != null && type.equals("all")) {
+            throw new MoneyBagProMaxException("'all` and 'month/' cannot be combined. "
+                    + "Use either: summary all OR summary month/YYYY-MM");
+        }
+
         if (type == null || type.isEmpty()) {
             type = "all";
         }
@@ -459,11 +464,6 @@ public class Parser {
         if (type.equals("month") && month == null) {
             throw new MoneyBagProMaxException("Did you mean: summary month/YYYY-MM? "
                     + "Use a slash to specify the month (e.g., summary month/2026-04).");
-        }
-
-        if (month != null && type.equals("all")) {
-            throw new MoneyBagProMaxException("'all` and 'month/' cannot be combined. "
-                    + "Use either: summary all OR summary month/YYYY-MM");
         }
         return new SummaryCommand(type, month);
     }
