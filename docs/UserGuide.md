@@ -64,6 +64,7 @@ respective system [here](https://www.oracle.com/java/technologies/javase/jdk17-a
 > - **Dates** must follow the `YYYY-MM-DD` format (e.g. `2026-03-01`).
 > - **Prices** must be a positive number (e.g. `10` or `10.50`).
 > - If a date is omitted, it defaults to today's date.
+> - Command names are case-insensitive. (e.g ADD food/10 will be accepted by the program).
 
 ---
 
