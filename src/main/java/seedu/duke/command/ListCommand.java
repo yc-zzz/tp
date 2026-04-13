@@ -14,6 +14,6 @@ public class ListCommand extends Command {
     /** @return boolean — always true, this command modifies the transaction list. */
     @Override
     public boolean isMutating() {
-        return true;
+        return false;
     }
 }
