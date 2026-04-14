@@ -198,6 +198,7 @@ All fields must be provided — the edit replaces the entire transaction, not in
 > [NOTE]
 > Use `list` first to confirm the index of the transaction you want to edit. The edit can be reversed with `undo`.
 
+> ⚠️ **Caution:** editing a transaction to another from income to expense and vice versa is not allowed.
 ---
 
 ### Undoing an Action: `undo`

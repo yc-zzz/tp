@@ -146,10 +146,7 @@ public class Parser {
                     && !CategoryManager.getInstance().isValidExpenseCategory(category)) {
                 throw new MoneyBagProMaxException("Invalid category '" + category + "'.");
             }
-            String remainderForRecCheck = remainder.contains(" desc/")
-                    ? remainder.substring(0, remainder.indexOf(" desc/"))
-                    : remainder;
-            if (remainderForRecCheck.contains(" rec/")) {
+            if (remainder.contains(" rec/")) {
                 Frequency frequency = parseFrequency(remainder);
                 String cleanRemainder = remainder.replaceFirst(" rec/\\S+", "").trim();
                 double amount = parseAmount(cleanRemainder);
@@ -210,6 +207,9 @@ public class Parser {
         assert descStart <= remainder.length() : "descStart index exceeds remainder length";
 
         String afterDesc = remainder.substring(descStart).trim();
+        if (afterDesc.contains(" rec/")) {
+            afterDesc = afterDesc.substring(0, afterDesc.indexOf(" rec/")).trim();
+        }
         if (afterDesc.contains(" d/")) {
             return afterDesc.substring(0, afterDesc.indexOf(" d/")).trim();
         }

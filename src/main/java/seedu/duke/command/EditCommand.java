@@ -60,7 +60,9 @@ public class EditCommand extends Command {
     @Override
     public void execute(TransactionList list, Budget budget, Ui ui) throws MoneyBagProMaxException {
         int listIndex = targetIndex - 1;
-
+        if (list.isEmpty()) {
+            throw new MoneyBagProMaxException("There are no transactions to edit.");
+        }
         if (listIndex < 0 || listIndex >= list.size()) {
             throw new MoneyBagProMaxException("Invalid transaction index. "
                     + "Please provide a number between 1 and " + list.size() + ".");
@@ -78,6 +80,13 @@ public class EditCommand extends Command {
                     + " Valid expense categories: " + Expense.VALID_CATEGORIES
                     + " Valid income categories: " + Income.VALID_CATEGORIES);
             return;
+        }
+        Transaction existing = list.get(listIndex);
+        if (!newTransaction.getType().equals(existing.getType())) {
+            throw new MoneyBagProMaxException(
+                    "Cannot change transaction type from " + existing.getType()
+                            + " to " + newTransaction.getType()
+                            + ". Delete the existing transaction and add a new one instead.");
         }
 
         Transaction oldTransaction = list.remove(listIndex);
